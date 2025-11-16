@@ -1,102 +1,91 @@
 <!DOCTYPE html>
 <html lang="fr">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Calcul numérique et algébrique · Automatismes Première</title>
-    <link rel="stylesheet" href="styles.css" />
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap"
-      rel="stylesheet"
-    />
-  </head>
-  <body>
-    <header class="hero hero--compact" id="top">
-      <nav class="nav">
-        <a class="logo" href="index.html">Automatismes</a>
-        <ul class="nav__list">
-          <li><a href="calcul.html">Calcul numérique</a></li>
-          <li><a href="proportions.html">Proportions</a></li>
-          <li><a href="evolutions.html">Évolutions</a></li>
-          <li><a href="fonctions.html">Fonctions</a></li>
-          <li><a href="statistiques.html">Statistiques</a></li>
-          <li><a href="probabilites.html">Probabilités</a></li>
-        </ul>
-      </nav>
-      <div class="hero__content">
-        <p class="eyebrow">Générateur</p>
-        <h1>Calcul numérique et algébrique</h1>
-        <p>
-          Retrouve le même univers visuel que la page d'accueil et entraîne-toi sur
-          des séries de 10 questions couvrant tout le programme de calculs
-          usuels.
-        </p>
-        <div class="hero__cta">
-          <a class="btn" href="#entrainement">Lancer une série</a>
-          <a class="btn btn--ghost" href="index.html">← Retour à l'accueil</a>
-        </div>
-      </div>
-    </header>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Calcul numérique et algébrique · Automatismes Première</title>
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet" />
+</head>
 
-    <main>
-      <section class="section intro">
-        <div>
-          <h2>Compétences mobilisées</h2>
-          <p>
-            Compare des nombres, manipule les fractions, simplifie les puissances
-            et maîtrise le calcul littéral pour répondre efficacement sous
-            pression.
-          </p>
-        </div>
-        <ul>
-          <li>10 questions générées aléatoirement à chaque session.</li>
-          <li>
-            Explications détaillées pour comprendre les erreurs et consolider les
-            réflexes.
-          </li>
-          <li>Bouton « Nouvelle série » pour varier les situations.</li>
-        </ul>
-      </section>
+<body>
+<header class="hero hero--compact" id="top">
+  <nav class="nav">
+    <a class="logo" href="index.html">Automatismes</a>
+    <ul class="nav__list">
+      <li><a href="calcul.html">Calcul numérique</a></li>
+      <li><a href="proportions.html">Proportions</a></li>
+      <li><a href="evolutions.html">Évolutions</a></li>
+      <li><a href="fonctions.html">Fonctions</a></li>
+      <li><a href="statistiques.html">Statistiques</a></li>
+      <li><a href="probabilites.html">Probabilités</a></li>
+    </ul>
+  </nav>
 
-      <section class="module" id="entrainement">
-        <div class="module__header">
-          <p class="eyebrow">Session active</p>
-          <h2>Générateur de calculs numériques</h2>
-          <p>Crée un QCM complet, corrige ou affiche toutes les réponses.</p>
-        </div>
-        <div class="generator">
-          <p class="generator__intro">
-            Chaque question propose quatre réponses possibles. Lance une nouvelle
-            série dès que tu veux renouveler l'entraînement.
-          </p>
-          <div class="generator__actions" id="controls">
-            <button class="btn" type="button" id="newSet">Nouvelle série</button>
-            <button class="btn btn--ghost" type="button" id="correct">
-              Corriger
-            </button>
-            <button class="btn btn--ghost" type="button" id="showAnswers">
-              Afficher toutes les réponses
-            </button>
-          </div>
-          <div id="quiz" class="generator__questions"></div>
-          <div id="result" class="generator__result" aria-live="polite"></div>
-        </div>
-      </section>
-    </main>
+  <div class="hero__content">
+    <p class="eyebrow">Générateur</p>
+    <h1>Calcul numérique et algébrique</h1>
+    <p>
+      Entraîne-toi sur des séries de 10 questions couvrant tout le programme de calculs usuels.
+    </p>
+    <div class="hero__cta">
+      <a class="btn" href="#entrainement">Lancer une série</a>
+      <a class="btn btn--ghost" href="index.html">← Retour à l'accueil</a>
+    </div>
+  </div>
+</header>
 
-    <footer class="footer">
-      <p>
-        &copy; <span id="year"></span> Automatisation des calculs — Prépare ton
-        Bac sereinement.
-      </p>
-      <a href="#top">Retour en haut</a>
-    </footer>
+<main>
+<section class="section intro">
+  <div>
+    <h2>Compétences mobilisées</h2>
+    <p>
+      Compare, simplifie, développe, factorise, résous : toutes les bases pour réussir l'épreuve.
+    </p>
+  </div>
+  <ul>
+    <li>10 questions générées aléatoirement à chaque session.</li>
+    <li>Explications détaillées pour comprendre les erreurs.</li>
+    <li>Bouton « Nouvelle série » pour varier les situations.</li>
+  </ul>
+</section>
 
-    <script src="scripts.js"></script>
-    <script>
-/* ===================== OUTILS GÉNÉRAUX ===================== */
+<section class="module" id="entrainement">
+  <div class="module__header">
+    <p class="eyebrow">Session active</p>
+    <h2>Générateur de calculs numériques</h2>
+    <p>Crée un QCM complet, corrige ou affiche toutes les réponses.</p>
+  </div>
+
+  <div class="generator">
+    <p class="generator__intro">
+      Chaque question propose quatre réponses possibles.
+    </p>
+
+    <div class="generator__actions" id="controls">
+      <button class="btn" type="button" id="newSet">Nouvelle série</button>
+      <button class="btn btn--ghost" type="button" id="correct">Corriger</button>
+      <button class="btn btn--ghost" type="button" id="showAnswers">Afficher toutes les réponses</button>
+    </div>
+
+    <div id="quiz" class="generator__questions"></div>
+    <div id="result" class="generator__result" aria-live="polite"></div>
+  </div>
+</section>
+</main>
+
+<footer class="footer">
+  <p>&copy; <span id="year"></span> Automatisation des calculs — Prépare ton Bac sereinement.</p>
+  <a href="#top">Retour en haut</a>
+</footer>
+
+
+<!-- ===================== SCRIPT ===================== -->
+
+<script>
+document.getElementById("year").textContent = new Date().getFullYear();
 
 const NB_QUESTIONS = 10;
 let quizData = [];
@@ -107,474 +96,336 @@ const newSetButton = document.getElementById("newSet");
 const correctButton = document.getElementById("correct");
 const showAnswersButton = document.getElementById("showAnswers");
 
-/** entier aléatoire entre min et max (inclus) */
+/* ------- outils ------- */
+
 function randInt(min, max) {
-    return Math.floor(Math.random() * (max - min + 1)) + min;
+  return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
-/** Mélange un tableau (Fisher-Yates) */
 function shuffle(array) {
-    for (let i = array.length - 1; i > 0; i--) {
-        const j = randInt(0, i);
-        [array[i], array[j]] = [array[j], array[i]];
-    }
+  for (let i = array.length - 1; i > 0; i--) {
+    const j = randInt(0, i);
+    [array[i], array[j]] = [array[j], array[i]];
+  }
 }
 
-/** PGCD pour simplifier les fractions */
 function gcd(a, b) {
-    a = Math.abs(a);
-    b = Math.abs(b);
-    while (b !== 0) {
-        const t = b;
-        b = a % b;
-        a = t;
-    }
-    return a;
+  a = Math.abs(a); b = Math.abs(b);
+  while (b !== 0) { const t = b; b = a % b; a = t; }
+  return a;
 }
 
-/** écriture d'une fraction simplifiée en chaîne "num/den" (den>0) */
 function fractionString(num, den) {
-    const g = gcd(num, den);
-    num /= g;
-    den /= g;
-    if (den < 0) {
-        den = -den;
-        num = -num;
-    }
-    if (den === 1) return String(num);
-    return num + "/" + den;
+  const g = gcd(num, den);
+  num /= g; den /= g;
+  if (den < 0) { den = -den; num = -num; }
+  return den === 1 ? String(num) : num + "/" + den;
 }
 
-/** écriture a^n avec <sup>, n entier */
 function powString(base, exp) {
-    if (exp === 1) return String(base);
-    return base + "<sup>" + exp + "</sup>";
+  return exp === 1 ? String(base) : base + "<sup>" + exp + "</sup>";
 }
 
 function formatLinear(coef, constant) {
-    let partX = "";
-    if (coef === 0) {
-        partX = "";
-    } else if (coef === 1) {
-        partX = "x";
-    } else if (coef === -1) {
-        partX = "-x";
-    } else {
-        partX = coef + "x";
-    }
+  let partX = "";
+  if (coef === 0) partX = "";
+  else if (coef === 1) partX = "x";
+  else if (coef === -1) partX = "-x";
+  else partX = coef + "x";
 
-    if (constant === 0) {
-        return partX || "0";
-    }
-    if (!partX) {
-        return String(constant);
-    }
-    const sign = constant > 0 ? " + " : " - ";
-    const absConst = Math.abs(constant);
-    return partX + sign + absConst;
+  if (constant === 0) return partX || "0";
+  if (!partX) return String(constant);
+
+  const sign = constant > 0 ? " + " : " - ";
+  return partX + sign + Math.abs(constant);
 }
 
-/* ===================== GÉNÉRATEURS DE QUESTIONS ===================== */
+/* ------- générateurs ------- */
 
-/* 1) Comparer deux nombres (entiers) */
 function genCompareNumbers() {
-    let a = randInt(-20, 20);
-    let b;
-    do {
-        b = randInt(-20, 20);
-    } while (b === a);
+  let a = randInt(-20,20);
+  let b = randInt(-20,20);
+  while (b === a) b = randInt(-20,20);
 
-    let correctRel;
-    if (a < b) correctRel = "a < b";
-    else if (a > b) correctRel = "a > b";
-    else correctRel = "a = b";
-
-    const choices = [
-        "a < b",
-        "a > b",
-        "a = b",
-        "On ne peut pas savoir"
-    ];
-    const correctIndex = choices.indexOf(correctRel);
-
-    return {
-        statement: `On considère deux nombres : a = ${a} et b = ${b}. Comparer a et b.`,
-        choices,
-        correctIndex,
-        explanation: `Ici a = ${a} et b = ${b}, donc ${correctRel}.`
-    };
+  let correctRel = a < b ? "a < b" : "a > b";
+  const choices = ["a < b","a > b","a = b","On ne peut pas savoir"];
+  return {
+    statement: `On considère a=${a} et b=${b}. Comparer a et b.`,
+    choices,
+    correctIndex: choices.indexOf(correctRel),
+    explanation: `Comme ${a} et ${b} se comparent directement : ${correctRel}.`
+  };
 }
 
-/* 2) Opérations sur les fractions (addition) */
 function genFractions() {
-    const q = randInt(2, 9);
-    const s = randInt(2, 9);
-    const p = randInt(1, q - 1);
-    const r = randInt(1, s - 1);
+  const q = randInt(2,9), s = randInt(2,9);
+  const p = randInt(1,q-1), r = randInt(1,s-1);
 
-    const num = p * s + r * q;
-    const den = q * s;
-    const correctFrac = fractionString(num, den);
+  const num = p*s + r*q;
+  const den = q*s;
+  const correct = fractionString(num, den);
 
-    const wrong1 = fractionString(p + r, q + s);
-    const wrong2 = `${num}/${den}`;
-    const wrong3 = fractionString(num - q, den);
+  let choices = [
+    correct,
+    fractionString(p+r, q+s),
+    `${num}/${den}`,
+    fractionString(num-q, den)
+  ];
+  choices = [...new Set(choices)];
+  shuffle(choices);
 
-    let rawChoices = [correctFrac, wrong1, wrong2, wrong3];
-    rawChoices = [...new Set(rawChoices)];
-    while (rawChoices.length < 4) {
-        rawChoices.push(fractionString(num + randInt(-3, 3), den));
-        rawChoices = [...new Set(rawChoices)];
-    }
-    shuffle(rawChoices);
-    const correctIndex = rawChoices.indexOf(correctFrac);
-
-    return {
-        statement: `Calculer : ${p}/${q} + ${r}/${s}.`,
-        choices: rawChoices,
-        correctIndex,
-        explanation: `On met au même dénominateur : ${p}/${q} + ${r}/${s} = (${p}×${s} + ${r}×${q})/(${q}×${s}) = ${num}/${den}
-= ${correctFrac}.`
-    };
+  return {
+    statement: `Calculer : ${p}/${q} + ${r}/${s}.`,
+    choices,
+    correctIndex: choices.indexOf(correct),
+    explanation: `Somme = (${p}×${s} + ${r}×${q}) / (${q}×${s}) = ${num}/${den} = ${correct}.`
+  };
 }
 
-/* 3) Opérations sur les puissances */
 function genPowers() {
-    const base = randInt(2, 7);
-    const m = randInt(-2, 3);
-    const n = randInt(-2, 3);
-    const exp = m + n;
+  const base = randInt(2,7);
+  const m = randInt(-2,3);
+  const n = randInt(-2,3);
 
-    const correct = powString(base, exp);
-    const c1 = powString(base, m * n);
-    const c2 = powString(base, m - n);
-    const c3 = powString(base, n - m);
+  const correct = powString(base, m+n);
 
-    let choices = [correct, c1, c2, c3];
-    choices = [...new Set(choices)];
-    while (choices.length < 4) {
-        choices.push(powString(base, exp + randInt(-3, 3)));
-        choices = [...new Set(choices)];
-    }
-    shuffle(choices);
-    const correctIndex = choices.indexOf(correct);
+  const c1 = powString(base, m*n);
+  const c2 = powString(base, m-n);
+  const c3 = powString(base, n-m);
 
-    return {
-        statement: `Simplifier : ${powString(base, m)} × ${powString(base, n)}.`,
-        choices,
-        correctIndex,
-        explanation: `On utilise a<sup>m</sup> × a<sup>n</sup> = a<sup>m+n</sup>, donc ${powString(base, m)} × ${powString(base
- n)} = ${correct}.`
-    };
+  let choices = [correct,c1,c2,c3];
+  shuffle(choices);
+
+  return {
+    statement: `Simplifier : ${powString(base, m)} × ${powString(base, n)}.`,
+    choices,
+    correctIndex: choices.indexOf(correct),
+    explanation: `Règle : a^m × a^n = a^(m+n).`
+  };
 }
 
-/* 4) Passage pourcentage / écriture décimale */
 function genPercentConversion() {
-    const percArr = [5, 10, 12, 20, 25, 30, 40, 50];
-    const p = percArr[randInt(0, percArr.length - 1)];
+  const p = [5,10,12,20,25,30,40,50][randInt(0,7)];
+  const correct = String(p/100).replace(".",",");
 
-    const correctDec = p / 100;
-    const correct = String(correctDec).replace(".", ",");
+  let choices = [
+    correct,
+    String(p/10).replace(".",","),
+    String(p).replace(".",","),
+    String((p/1000).toFixed(3)).replace(".",",")
+  ];
 
-    const w1 = String(p / 10).replace(".", ",");
-    const w2 = String(p).replace(".", ",");
-    const w3 = String((p / 1000).toFixed(3)).replace(".", ",");
+  shuffle(choices);
 
-    let choices = [correct, w1, w2, w3];
-    choices = [...new Set(choices)];
-    shuffle(choices);
-    const correctIndex = choices.indexOf(correct);
-
-    return {
-        statement: `Écrire ${p} % sous forme décimale.`,
-        choices,
-        correctIndex,
-        explanation: `${p} % = ${p}/100 = ${correctDec}.`
-    };
+  return {
+    statement: `Écrire ${p}% sous forme décimale.`,
+    choices,
+    correctIndex: choices.indexOf(correct),
+    explanation: `${p}% = ${p}/100 = ${correct}.`
+  };
 }
 
-/* 5) Ordre de grandeur (produit simple) */
 function genOrderMagnitude() {
-    const a = randInt(30, 80);
-    const b = randInt(2, 9);
-    const exact = a * b;
+  const a=randInt(30,80), b=randInt(2,9);
+  const exact=a*b;
+  const correct = String(Math.round(exact/100)*100);
 
-    const approx1 = Math.round(exact / 10) * 10;
-    const approx2 = Math.round(exact / 100) * 100;
-    const approx3 = approx1 + 50;
+  let choices=[correct,String(exact),String(Math.round(exact/10)*10),String(Math.round(exact/10)*10+50)];
+  shuffle(choices);
 
-    const correct = `${approx2}`;
-    let choices = [correct, `${exact}`, `${approx1}`, `${approx3}`];
-    choices = [...new Set(choices)];
-    shuffle(choices);
-    const correctIndex = choices.indexOf(correct);
-
-    return {
-        statement: `Donner un ordre de grandeur du produit ${a} × ${b}.`,
-        choices,
-        correctIndex,
-        explanation: `Le produit exact est ${exact}. Un ordre de grandeur raisonnable à la centaine près est ${correct}.`
-    };
+  return {
+    statement:`Donner un ordre de grandeur du produit ${a}×${b}.`,
+    choices,
+    correctIndex: choices.indexOf(correct),
+    explanation:`Produit exact ${exact}, ordre de grandeur ~${correct}.`
+  };
 }
 
-/* 6) Calcul littéral élémentaire */
 function genLiteral() {
-    const a = randInt(1, 5);
-    const b = randInt(1, 7);
-    const c = randInt(1, 5);
-    const d = randInt(1, 7);
+  const a=randInt(1,5), b=randInt(1,7), c=randInt(1,5), d=randInt(1,7);
+  const coef=-a+c;
+  const cons=-b+d;
+  const correct=formatLinear(coef,cons);
 
-    const coef = -a + c;
-    const constant = -b + d;
-    const correct = formatLinear(coef, constant);
+  let choices=[correct, formatLinear(-a-c,-b-d), formatLinear(a+c,b+d), formatLinear(coef,-cons)];
+  shuffle(choices);
 
-    const wrong1 = formatLinear(-a - c, -b - d);
-    const wrong2 = formatLinear(a + c, b + d);
-    const wrong3 = formatLinear(coef, -constant);
-
-    let choices = [correct, wrong1, wrong2, wrong3];
-    choices = [...new Set(choices)];
-    while (choices.length < 4) {
-        choices.push(formatLinear(coef + randInt(-2, 2), constant + randInt(-3, 3)));
-        choices = [...new Set(choices)];
-    }
-    shuffle(choices);
-    const correctIndex = choices.indexOf(correct);
-
-    return {
-        statement: `Développer et réduire : -( ${a}x + ${b} ) + (${c}x + ${d}).`,
-        choices,
-        correctIndex,
-        explanation: `On distribue le signe moins : -${a}x - ${b} + ${c}x + ${d} = ${correct}.`
-    };
+  return {
+    statement:`Développer et réduire : –(${a}x + ${b}) + (${c}x + ${d}).`,
+    choices,
+    correctIndex:choices.indexOf(correct),
+    explanation:`Distribution : –${a}x – ${b} + ${c}x + ${d} = ${correct}.`
+  };
 }
 
-/* 7) Développement simple */
 function genDistributive() {
-    const k = randInt(2, 9);
-    const m = randInt(1, 6);
-    const n = randInt(-6, 6);
-    const correct = formatLinear(k * m, k * n);
+  const k=randInt(2,9), m=randInt(1,6), n=randInt(-6,6);
+  const correct=formatLinear(k*m,k*n);
 
-    const wrong1 = formatLinear(m + n, k);
-    const wrong2 = formatLinear(k * m, n);
-    const wrong3 = formatLinear(m, k * n);
+  let choices=[correct,formatLinear(m+n,k),formatLinear(k*m,n),formatLinear(m,k*n)];
+  shuffle(choices);
 
-    let choices = [correct, wrong1, wrong2, wrong3];
-    choices = [...new Set(choices)];
-    shuffle(choices);
-    const correctIndex = choices.indexOf(correct);
-
-    const formattedN = n >= 0 ? `+ ${n}` : `- ${Math.abs(n)}`;
-
-    return {
-        statement: `Développer : ${k}( ${m}x ${formattedN} ).`,
-        choices,
-        correctIndex,
-        explanation: `${k}×${m}x = ${k * m}x et ${k}×${n} = ${k * n}, donc ${correct}.`
-    };
+  return {
+    statement:`Développer : ${k}(${m}x ${n>=0?"+":"-"} ${Math.abs(n)}).`,
+    choices,
+    correctIndex:choices.indexOf(correct),
+    explanation:`k×${m}x = ${k*m}x, k×${n} = ${k*n}.`
+  };
 }
 
-/* 8) Résolution d'une équation linéaire */
 function genEquation() {
-    const a = randInt(2, 7);
-    const x = randInt(-5, 8);
-    const b = randInt(-9, 9);
-    const c = a * x + b;
+  const a=randInt(2,7), x=randInt(-5,8), b=randInt(-9,9);
+  const c=a*x+b;
 
-    const correct = `${x}`;
-    const wrong1 = `${x + randInt(-3, -1)}`;
-    const wrong2 = `${x + randInt(1, 3)}`;
-    const wrong3 = `${-x}`;
+  let choices=[String(x),String(x+1),String(x-1),String(-x)];
+  shuffle(choices);
 
-    let choices = [correct, wrong1, wrong2, wrong3];
-    choices = [...new Set(choices)];
-    while (choices.length < 4) {
-        choices.push(`${x + randInt(-5, 5)}`);
-        choices = [...new Set(choices)];
-    }
-    shuffle(choices);
-    const correctIndex = choices.indexOf(correct);
-
-    const formattedB = b >= 0 ? `+ ${b}` : `- ${Math.abs(b)}`;
-
-    return {
-        statement: `Résoudre : ${a}x ${formattedB} = ${c}.`,
-        choices,
-        correctIndex,
-        explanation: `On transpose : ${a}x = ${c - b}, donc x = (${c - b})/${a} = ${x}.`
-    };
+  return {
+    statement:`Résoudre : ${a}x ${b>=0?"+":"-"}${Math.abs(b)} = ${c}.`,
+    choices,
+    correctIndex:choices.indexOf(String(x)),
+    explanation:`${a}x = ${c-b}, donc x=(${c-b})/${a} = ${x}.`
+  };
 }
 
-/* 9) Identité remarquable */
 function genIdentity() {
-    const a = randInt(1, 6);
-    const b = randInt(1, 6);
-    const correct = `${a * a}x<sup>2</sup> ${2 * a * b >= 0 ? "+" : "-"} ${Math.abs(2 * a * b)}x + ${b * b}`;
+  const a=randInt(1,6), b=randInt(1,6);
+  const correct=`${a*a}x<sup>2</sup> ${2*a*b>=0?"+":"-"} ${Math.abs(2*a*b)}x + ${b*b}`;
 
-    const wrong1 = `${a * a}x<sup>2</sup> + ${b * b}`;
-    const wrong2 = `${a * a}x<sup>2</sup> ${2 * a * b >= 0 ? "+" : "-"} ${Math.abs(2 * a * b)}x - ${b * b}`;
-    const wrong3 = `${a * a}x<sup>2</sup> ${2 * a * b >= 0 ? "+" : "-"} ${Math.abs(2 * a * b)}x + ${2 * b}`;
+  let choices=[correct,`${a*a}x<sup>2</sup> + ${b*b}`,`${a*a}x<sup>2</sup> – ${Math.abs(2*a*b)}x`,`${a*a}x<sup>2</sup> + ${2*b}`];
+  shuffle(choices);
 
-    let choices = [correct, wrong1, wrong2, wrong3];
-    choices = [...new Set(choices)];
-    shuffle(choices);
-    const correctIndex = choices.indexOf(correct);
-
-    return {
-        statement: `Développer : (${a}x ${b >= 0 ? "+" : "-"} ${Math.abs(b)})<sup>2</sup>.`,
-        choices,
-        correctIndex,
-        explanation: `On applique (u+v)<sup>2</sup> = u<sup>2</sup> + 2uv + v<sup>2</sup>.`
-    };
+  return {
+    statement:`Développer : (${a}x + ${b})²`,
+    choices,
+    correctIndex:choices.indexOf(correct),
+    explanation:`(u+v)² = u² + 2uv + v².`
+  };
 }
 
-/* 10) Factorisation par mise en évidence */
 function genFactorisation() {
-    const k = randInt(2, 9);
-    const m = randInt(1, 7);
-    const n = randInt(1, 7);
+  const k=randInt(2,9), m=randInt(1,7), n=randInt(1,7);
+  const correct = `${k}(${m}x + ${n})`;
 
-    const correct = `${k}( ${m}x ${n >= 0 ? "+" : "-"} ${Math.abs(n)} )`;
-    const wrong1 = `${k + m}x ${n >= 0 ? "+" : "-"} ${Math.abs(n)}`;
-    const wrong2 = `${k}( ${m + n}x + ${n} )`;
-    const wrong3 = `${k}( ${m}x ${n >= 0 ? "+" : "-"} ${Math.abs(n * k)} )`;
+  let choices=[correct, `${k+m}x + ${n}`, `${k}( ${m+n}x + ${n})`, `${k}( ${m}x + ${n*k})`];
+  shuffle(choices);
 
-    let choices = [correct, wrong1, wrong2, wrong3];
-    choices = [...new Set(choices)];
-    shuffle(choices);
-    const correctIndex = choices.indexOf(correct);
-
-    return {
-        statement: `Factoriser : ${k * m}x ${k * n >= 0 ? "+" : "-"} ${Math.abs(k * n)}.`,
-        choices,
-        correctIndex,
-        explanation: `On met ${k} en facteur commun : ${k * m}x + ${k * n} = ${k}( ${m}x + ${n} ).`
-    };
+  return {
+    statement:`Factoriser : ${k*m}x + ${k*n}.`,
+    choices,
+    correctIndex:choices.indexOf(correct),
+    explanation:`On met ${k} en facteur : ${k}( ${m}x + ${n} ).`
+  };
 }
+
+/* ------- liste des générateurs ------- */
 
 const generators = [
-    genCompareNumbers,
-    genFractions,
-    genPowers,
-    genPercentConversion,
-    genOrderMagnitude,
-    genLiteral,
-    genDistributive,
-    genEquation,
-    genIdentity,
-    genFactorisation
+  genCompareNumbers,
+  genFractions,
+  genPowers,
+  genPercentConversion,
+  genOrderMagnitude,
+  genLiteral,
+  genDistributive,
+  genEquation,
+  genIdentity,
+  genFactorisation
 ];
 
-/* ===================== LOGIQUE DU QCM ===================== */
+/* ------- moteur ------- */
 
 function generateQuiz() {
-    quizData = [];
-    const genPool = [...generators];
-    while (quizData.length < NB_QUESTIONS) {
-        if (genPool.length === 0) {
-            genPool.push(...generators);
-        }
-        const genIndex = randInt(0, genPool.length - 1);
-        const generator = genPool.splice(genIndex, 1)[0];
-        quizData.push(generator());
-    }
+  quizData=[];
+  for (let i=0;i<NB_QUESTIONS;i++){
+    const gen = generators[randInt(0,generators.length-1)];
+    quizData.push(gen());
+  }
 }
 
 function renderQuiz() {
-    quizElement.innerHTML = "";
-    quizData.forEach((question, index) => {
-        const wrapper = document.createElement("div");
-        wrapper.className = "question";
-        wrapper.dataset.index = index;
+  quizElement.innerHTML="";
+  quizData.forEach((q,i)=>{
+    const box=document.createElement("div");
+    box.className="question";
+    box.dataset.index=i;
 
-        const statement = document.createElement("p");
-        statement.className = "statement";
-        statement.innerHTML = `Question ${index + 1}. ${question.statement}`;
-        wrapper.appendChild(statement);
+    const st=document.createElement("p");
+    st.className="statement";
+    st.innerHTML=`Question ${i+1}. ${q.statement}`;
+    box.appendChild(st);
 
-        const choicesContainer = document.createElement("div");
-        choicesContainer.className = "choices";
+    const choices=document.createElement("div");
+    choices.className="choices";
 
-        question.choices.forEach((choice, choiceIndex) => {
-            const label = document.createElement("label");
-            const input = document.createElement("input");
-            input.type = "radio";
-            input.name = `q${index}`;
-            input.value = choiceIndex;
-            label.appendChild(input);
-            const span = document.createElement("span");
-            span.innerHTML = choice;
-            label.appendChild(span);
-            choicesContainer.appendChild(label);
-        });
+    q.choices.forEach((c,j)=>{
+      const label=document.createElement("label");
+      const input=document.createElement("input");
+      input.type="radio"; input.name=`q${i}`; input.value=j;
+      const span=document.createElement("span");
 
-        wrapper.appendChild(choicesContainer);
-
-        const feedback = document.createElement("div");
-        feedback.className = "feedback";
-        wrapper.appendChild(feedback);
-
-        quizElement.appendChild(wrapper);
+      span.innerHTML=c;
+      label.appendChild(input);
+      label.appendChild(span);
+      choices.appendChild(label);
     });
-    resultElement.textContent = "";
+
+    box.appendChild(choices);
+
+    const fb=document.createElement("div");
+    fb.className="feedback";
+    box.appendChild(fb);
+
+    quizElement.appendChild(box);
+  });
+
+  resultElement.textContent="";
 }
 
 function correctQuiz() {
-    let score = 0;
-    quizData.forEach((question, index) => {
-        const questionElement = document.querySelector(`.question[data-index="${index}"]`);
-        const feedbackElement = questionElement.querySelector(".feedback");
-        const selected = questionElement.querySelector("input:checked");
-        questionElement.classList.remove("correct", "incorrect");
+  let score=0;
+  quizData.forEach((q,i)=>{
+    const box=document.querySelector(`.question[data-index="${i}"]`);
+    const fb=box.querySelector(".feedback");
+    const selected=box.querySelector("input:checked");
 
-        if (!selected) {
-            feedbackElement.textContent = "Choisis une réponse avant de corriger.";
-            return;
-        }
+    box.classList.remove("correct","incorrect");
 
-        const answer = Number(selected.value);
-        if (answer === question.correctIndex) {
-            score++;
-            questionElement.classList.add("correct");
-            feedbackElement.innerHTML = `Bonne réponse ! ${question.explanation}`;
-        } else {
-            questionElement.classList.add("incorrect");
-            feedbackElement.innerHTML = `Réponse attendue : <span class="answer-text">${question.choices[question.correctIndex]}</span>. ${question.explanation}`;
-        }
-    });
-    resultElement.textContent = `Score : ${score} / ${quizData.length}`;
+    if (!selected){
+      fb.textContent="Choisis une réponse.";
+      return;
+    }
+    if (Number(selected.value) === q.correctIndex){
+      score++;
+      box.classList.add("correct");
+      fb.innerHTML=`Bonne réponse ! ${q.explanation}`;
+    } else {
+      box.classList.add("incorrect");
+      fb.innerHTML=`Réponse attendue : <strong>${q.choices[q.correctIndex]}</strong>. ${q.explanation}`;
+    }
+  });
+  resultElement.textContent=`Score : ${score}/${quizData.length}`;
 }
 
 function showAllAnswers() {
-    quizData.forEach((question, index) => {
-        const questionElement = document.querySelector(`.question[data-index="${index}"]`);
-        const feedbackElement = questionElement.querySelector(".feedback");
-        questionElement.classList.remove("incorrect");
-        questionElement.classList.add("correct");
-        feedbackElement.innerHTML = `Réponse : <span class="answer-text">${question.choices[question.correctIndex]}</span>. ${question.explanation}`;
-    });
-    resultElement.textContent = "Réponses affichées pour toute la série.";
+  quizData.forEach((q,i)=>{
+    const box=document.querySelector(`.question[data-index="${i}"]`);
+    const fb=box.querySelector(".feedback");
+    box.classList.remove("incorrect");
+    box.classList.add("correct");
+    fb.innerHTML=`Réponse : <strong>${q.choices[q.correctIndex]}</strong>. ${q.explanation}`;
+  });
+  resultElement.textContent="Réponses affichées.";
 }
 
-function initQuiz() {
-    generateQuiz();
-    renderQuiz();
-}
+newSetButton.addEventListener("click", ()=>{ generateQuiz(); renderQuiz(); });
+correctButton.addEventListener("click", correctQuiz);
+showAnswersButton.addEventListener("click", showAllAnswers);
 
-newSetButton.addEventListener("click", () => {
-    initQuiz();
-});
+generateQuiz();
+renderQuiz();
+</script>
 
-correctButton.addEventListener("click", () => {
-    correctQuiz();
-});
-
-showAnswersButton.addEventListener("click", () => {
-    showAllAnswers();
-});
-
-initQuiz();
-    </script>
-  </body>
+</body>
 </html>
+
