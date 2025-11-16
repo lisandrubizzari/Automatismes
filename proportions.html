@@ -29,9 +29,9 @@
         <p class="eyebrow">Générateur</p>
         <h1>Proportions et évolutions</h1>
         <p>
-          Retrouve l’immersion de la page d’accueil pour travailler les
-          pourcentages, coefficients multiplicateurs et remises successives,
-          exactement comme sur le générateur 1.
+          Transforme le QCM fourni en une expérience immersive : retrouve la même
+          charte graphique que la page d’accueil et maîtrise les pourcentages,
+          taux d’évolution et coefficients multiplicateurs.
         </p>
         <div class="hero__cta">
           <a class="btn" href="#entrainement">Lancer une série</a>
@@ -45,17 +45,14 @@
         <div>
           <h2>Compétences mobilisées</h2>
           <p>
-            Convertis une proportion sous toutes ses écritures, calcule des
-            parts connues ou inconnues et anticipe les évolutions successives.
+            Passe d'une écriture fractionnaire à un pourcentage, calcule des
+            remises ou hausses successives et interprète un taux d'évolution.
           </p>
         </div>
         <ul>
-          <li>10 questions générées aléatoirement à chaque session.</li>
-          <li>
-            Explications détaillées pour comprendre les erreurs et consolider les
-            réflexes.
-          </li>
-          <li>Boutons « Nouvelle série », « Corriger » et « Afficher toutes les réponses ».</li>
+          <li>10 questions tirées aléatoirement dans 8 générateurs différents.</li>
+          <li>Explications pour chaque correction et affichage intégral des réponses.</li>
+          <li>Boutons « Nouvelle série », « Corriger » et « Afficher toutes les réponses ».</li>
         </ul>
       </section>
 
@@ -63,12 +60,16 @@
         <div class="module__header">
           <p class="eyebrow">Session active</p>
           <h2>Générateur proportions & évolutions</h2>
-          <p>Crée un QCM complet, corrige ou affiche toutes les réponses.</p>
+          <p>
+            Retrouve la logique du générateur 1 et exploite le script fourni pour
+            créer des séries complètes de QCM.
+          </p>
         </div>
         <div class="generator">
           <p class="generator__intro">
-            Chaque question propose quatre réponses possibles. Lance une nouvelle
-            série dès que tu veux renouveler l'entraînement.
+            Les questions mélangent conversions de proportions, calculs de parts
+            et variations successives. Sélectionne ta réponse avant de corriger
+            pour simuler un contrôle chronométré.
           </p>
           <div class="generator__actions" id="controls">
             <button class="btn" type="button" id="newSet">Nouvelle série</button>
@@ -130,9 +131,7 @@
           (a / b).toFixed(3).replace(".", ","),
           Math.round(((a / b) * 1000) / 10) + " %",
         ];
-        shuffle(wrongOptions);
-        const distractors = wrongOptions.slice(0, 3);
-        const choices = shuffle([correct, ...distractors]);
+        const choices = shuffle([correct, ...wrongOptions]).slice(0, 4);
         return {
           statement: `Quelle est une écriture correcte de la proportion correspondant à ${a} sur ${b} ?`,
           choices,
@@ -285,99 +284,83 @@
         genReciprocalRate,
       ];
 
+      function buildQuestionElement(question, index) {
+        const wrapper = document.createElement("div");
+        wrapper.className = "question";
+        const statement = document.createElement("div");
+        statement.className = "statement";
+        statement.innerHTML = `Question ${index + 1}. ${question.statement}`;
+        const choices = document.createElement("div");
+        choices.className = "choices";
+        question.choices.forEach((choice, choiceIndex) => {
+          const label = document.createElement("label");
+          const input = document.createElement("input");
+          input.type = "radio";
+          input.name = `q${index}`;
+          input.value = choiceIndex;
+          const span = document.createElement("span");
+          span.textContent = choice;
+          label.append(input, span);
+          choices.append(label);
+        });
+        const feedback = document.createElement("div");
+        feedback.className = "feedback";
+        wrapper.append(statement, choices, feedback);
+        return wrapper;
+      }
+
       function generateQuiz() {
         quizData = [];
+        quizElement.innerHTML = "";
+        resultElement.textContent = "";
         for (let i = 0; i < NB_QUESTIONS; i++) {
           const generator = generators[randInt(0, generators.length - 1)];
-          quizData.push(generator());
+          const question = generator();
+          quizData.push(question);
+          quizElement.append(buildQuestionElement(question, i));
         }
       }
 
-      function renderQuiz() {
-        quizElement.innerHTML = "";
-        quizData.forEach((question, index) => {
-          const wrapper = document.createElement("div");
-          wrapper.className = "question";
-          wrapper.dataset.index = index;
-
-          const statement = document.createElement("p");
-          statement.className = "statement";
-          statement.innerHTML = `Question ${index + 1}. ${question.statement}`;
-          wrapper.appendChild(statement);
-
-          const choices = document.createElement("div");
-          choices.className = "choices";
-          question.choices.forEach((choice, choiceIndex) => {
-            const label = document.createElement("label");
-            const input = document.createElement("input");
-            input.type = "radio";
-            input.name = `q${index}`;
-            input.value = choiceIndex;
-            label.appendChild(input);
-            const span = document.createElement("span");
-            span.textContent = choice;
-            label.appendChild(span);
-            choices.appendChild(label);
-          });
-          wrapper.appendChild(choices);
-
-          const feedback = document.createElement("div");
-          feedback.className = "feedback";
-          wrapper.appendChild(feedback);
-
-          quizElement.appendChild(wrapper);
-        });
-        resultElement.textContent = "";
-      }
-
-      function correctQuiz() {
+      function correctQuiz(showAll = false) {
         let score = 0;
-        quizData.forEach((question, index) => {
-          const card = document.querySelector(`.question[data-index="${index}"]`);
+        const questionCards = quizElement.querySelectorAll(".question");
+        questionCards.forEach((card, index) => {
           const feedback = card.querySelector(".feedback");
-          const selected = card.querySelector("input:checked");
-          card.classList.remove("correct", "incorrect");
           feedback.textContent = "";
-
-          if (!selected) {
-            feedback.textContent = "Choisis une réponse avant de corriger.";
-            return;
-          }
-
-          if (Number(selected.value) === question.correctIndex) {
-            score++;
-            card.classList.add("correct");
-            feedback.innerHTML = `Bonne réponse ! ${question.explanation}`;
+          card.classList.remove("correct", "incorrect");
+          const selected = card.querySelector(`input[name="q${index}"]:checked`);
+          const { correctIndex, choices, explanation } = quizData[index];
+          if (!showAll) {
+            if (!selected) {
+              feedback.textContent = "Aucune réponse sélectionnée.";
+              return;
+            }
+            if (Number(selected.value) === correctIndex) {
+              score++;
+              card.classList.add("correct");
+              feedback.textContent = `✔ Bonne réponse. ${explanation}`;
+            } else {
+              card.classList.add("incorrect");
+              feedback.innerHTML = `✘ Mauvaise réponse. <span class="answer-text">Réponse correcte : ${choices[correctIndex]}.</span> ${explanation}`;
+            }
           } else {
-            card.classList.add("incorrect");
-            feedback.innerHTML = `Réponse attendue : <span class="answer-text">${question.choices[question.correctIndex]}</span>. ${question.explanation}`;
+            card.classList.add("correct");
+            feedback.innerHTML = `<span class="answer-text">Réponse correcte : ${choices[correctIndex]}.</span> ${explanation}`;
           }
         });
 
-        resultElement.textContent = `Score : ${score} / ${quizData.length}`;
+        if (showAll) {
+          resultElement.textContent = "Réponses affichées.";
+        } else {
+          resultElement.textContent = `Score : ${score}/${quizData.length}`;
+        }
       }
 
-      function showAllAnswers() {
-        quizData.forEach((question, index) => {
-          const card = document.querySelector(`.question[data-index="${index}"]`);
-          const feedback = card.querySelector(".feedback");
-          card.classList.remove("incorrect");
-          card.classList.add("correct");
-          feedback.innerHTML = `Réponse : <span class="answer-text">${question.choices[question.correctIndex]}</span>. ${question.explanation}`;
-        });
-        resultElement.textContent = "Réponses affichées pour toute la série.";
-      }
+      newSetButton?.addEventListener("click", generateQuiz);
+      correctButton?.addEventListener("click", () => correctQuiz(false));
+      showAnswersButton?.addEventListener("click", () => correctQuiz(true));
 
-      function initQuiz() {
-        generateQuiz();
-        renderQuiz();
-      }
-
-      newSetButton?.addEventListener("click", initQuiz);
-      correctButton?.addEventListener("click", correctQuiz);
-      showAnswersButton?.addEventListener("click", showAllAnswers);
-
-      initQuiz();
+      generateQuiz();
     </script>
   </body>
 </html>
