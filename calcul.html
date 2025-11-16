@@ -1,431 +1,145 @@
 <!DOCTYPE html>
 <html lang="fr">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Calcul numérique et algébrique · Automatismes Première</title>
-  <link rel="stylesheet" href="styles.css" />
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet" />
-</head>
-
-<body>
-<header class="hero hero--compact" id="top">
-  <nav class="nav">
-    <a class="logo" href="index.html">Automatismes</a>
-    <ul class="nav__list">
-      <li><a href="calcul.html">Calcul numérique</a></li>
-      <li><a href="proportions.html">Proportions</a></li>
-      <li><a href="evolutions.html">Évolutions</a></li>
-      <li><a href="fonctions.html">Fonctions</a></li>
-      <li><a href="statistiques.html">Statistiques</a></li>
-      <li><a href="probabilites.html">Probabilités</a></li>
-    </ul>
-  </nav>
-
-  <div class="hero__content">
-    <p class="eyebrow">Générateur</p>
-    <h1>Calcul numérique et algébrique</h1>
-    <p>
-      Entraîne-toi sur des séries de 10 questions couvrant tout le programme de calculs usuels.
-    </p>
-    <div class="hero__cta">
-      <a class="btn" href="#entrainement">Lancer une série</a>
-      <a class="btn btn--ghost" href="index.html">← Retour à l'accueil</a>
-    </div>
-  </div>
-</header>
-
-<main>
-<section class="section intro">
-  <div>
-    <h2>Compétences mobilisées</h2>
-    <p>
-      Compare, simplifie, développe, factorise, résous : toutes les bases pour réussir l'épreuve.
-    </p>
-  </div>
-  <ul>
-    <li>10 questions générées aléatoirement à chaque session.</li>
-    <li>Explications détaillées pour comprendre les erreurs.</li>
-    <li>Bouton « Nouvelle série » pour varier les situations.</li>
-  </ul>
-</section>
-
-<section class="module" id="entrainement">
-  <div class="module__header">
-    <p class="eyebrow">Session active</p>
-    <h2>Générateur de calculs numériques</h2>
-    <p>Crée un QCM complet, corrige ou affiche toutes les réponses.</p>
-  </div>
-
-  <div class="generator">
-    <p class="generator__intro">
-      Chaque question propose quatre réponses possibles.
-    </p>
-
-    <div class="generator__actions" id="controls">
-      <button class="btn" type="button" id="newSet">Nouvelle série</button>
-      <button class="btn btn--ghost" type="button" id="correct">Corriger</button>
-      <button class="btn btn--ghost" type="button" id="showAnswers">Afficher toutes les réponses</button>
-    </div>
-
-    <div id="quiz" class="generator__questions"></div>
-    <div id="result" class="generator__result" aria-live="polite"></div>
-  </div>
-</section>
-</main>
-
-<footer class="footer">
-  <p>&copy; <span id="year"></span> Automatisation des calculs — Prépare ton Bac sereinement.</p>
-  <a href="#top">Retour en haut</a>
-</footer>
-
-
-<!-- ===================== SCRIPT ===================== -->
-
-<script>
-document.getElementById("year").textContent = new Date().getFullYear();
-
-const NB_QUESTIONS = 10;
-let quizData = [];
-
-const quizElement = document.getElementById("quiz");
-const resultElement = document.getElementById("result");
-const newSetButton = document.getElementById("newSet");
-const correctButton = document.getElementById("correct");
-const showAnswersButton = document.getElementById("showAnswers");
-
-/* ------- outils ------- */
-
-function randInt(min, max) {
-  return Math.floor(Math.random() * (max - min + 1)) + min;
-}
-
-function shuffle(array) {
-  for (let i = array.length - 1; i > 0; i--) {
-    const j = randInt(0, i);
-    [array[i], array[j]] = [array[j], array[i]];
-  }
-}
-
-function gcd(a, b) {
-  a = Math.abs(a); b = Math.abs(b);
-  while (b !== 0) { const t = b; b = a % b; a = t; }
-  return a;
-}
-
-function fractionString(num, den) {
-  const g = gcd(num, den);
-  num /= g; den /= g;
-  if (den < 0) { den = -den; num = -num; }
-  return den === 1 ? String(num) : num + "/" + den;
-}
-
-function powString(base, exp) {
-  return exp === 1 ? String(base) : base + "<sup>" + exp + "</sup>";
-}
-
-function formatLinear(coef, constant) {
-  let partX = "";
-  if (coef === 0) partX = "";
-  else if (coef === 1) partX = "x";
-  else if (coef === -1) partX = "-x";
-  else partX = coef + "x";
-
-  if (constant === 0) return partX || "0";
-  if (!partX) return String(constant);
-
-  const sign = constant > 0 ? " + " : " - ";
-  return partX + sign + Math.abs(constant);
-}
-
-/* ------- générateurs ------- */
-
-function genCompareNumbers() {
-  let a = randInt(-20,20);
-  let b = randInt(-20,20);
-  while (b === a) b = randInt(-20,20);
-
-  let correctRel = a < b ? "a < b" : "a > b";
-  const choices = ["a < b","a > b","a = b","On ne peut pas savoir"];
-  return {
-    statement: `On considère a=${a} et b=${b}. Comparer a et b.`,
-    choices,
-    correctIndex: choices.indexOf(correctRel),
-    explanation: `Comme ${a} et ${b} se comparent directement : ${correctRel}.`
-  };
-}
-
-function genFractions() {
-  const q = randInt(2,9), s = randInt(2,9);
-  const p = randInt(1,q-1), r = randInt(1,s-1);
-
-  const num = p*s + r*q;
-  const den = q*s;
-  const correct = fractionString(num, den);
-
-  let choices = [
-    correct,
-    fractionString(p+r, q+s),
-    `${num}/${den}`,
-    fractionString(num-q, den)
-  ];
-  choices = [...new Set(choices)];
-  shuffle(choices);
-
-  return {
-    statement: `Calculer : ${p}/${q} + ${r}/${s}.`,
-    choices,
-    correctIndex: choices.indexOf(correct),
-    explanation: `Somme = (${p}×${s} + ${r}×${q}) / (${q}×${s}) = ${num}/${den} = ${correct}.`
-  };
-}
-
-function genPowers() {
-  const base = randInt(2,7);
-  const m = randInt(-2,3);
-  const n = randInt(-2,3);
-
-  const correct = powString(base, m+n);
-
-  const c1 = powString(base, m*n);
-  const c2 = powString(base, m-n);
-  const c3 = powString(base, n-m);
-
-  let choices = [correct,c1,c2,c3];
-  shuffle(choices);
-
-  return {
-    statement: `Simplifier : ${powString(base, m)} × ${powString(base, n)}.`,
-    choices,
-    correctIndex: choices.indexOf(correct),
-    explanation: `Règle : a^m × a^n = a^(m+n).`
-  };
-}
-
-function genPercentConversion() {
-  const p = [5,10,12,20,25,30,40,50][randInt(0,7)];
-  const correct = String(p/100).replace(".",",");
-
-  let choices = [
-    correct,
-    String(p/10).replace(".",","),
-    String(p).replace(".",","),
-    String((p/1000).toFixed(3)).replace(".",",")
-  ];
-
-  shuffle(choices);
-
-  return {
-    statement: `Écrire ${p}% sous forme décimale.`,
-    choices,
-    correctIndex: choices.indexOf(correct),
-    explanation: `${p}% = ${p}/100 = ${correct}.`
-  };
-}
-
-function genOrderMagnitude() {
-  const a=randInt(30,80), b=randInt(2,9);
-  const exact=a*b;
-  const correct = String(Math.round(exact/100)*100);
-
-  let choices=[correct,String(exact),String(Math.round(exact/10)*10),String(Math.round(exact/10)*10+50)];
-  shuffle(choices);
-
-  return {
-    statement:`Donner un ordre de grandeur du produit ${a}×${b}.`,
-    choices,
-    correctIndex: choices.indexOf(correct),
-    explanation:`Produit exact ${exact}, ordre de grandeur ~${correct}.`
-  };
-}
-
-function genLiteral() {
-  const a=randInt(1,5), b=randInt(1,7), c=randInt(1,5), d=randInt(1,7);
-  const coef=-a+c;
-  const cons=-b+d;
-  const correct=formatLinear(coef,cons);
-
-  let choices=[correct, formatLinear(-a-c,-b-d), formatLinear(a+c,b+d), formatLinear(coef,-cons)];
-  shuffle(choices);
-
-  return {
-    statement:`Développer et réduire : –(${a}x + ${b}) + (${c}x + ${d}).`,
-    choices,
-    correctIndex:choices.indexOf(correct),
-    explanation:`Distribution : –${a}x – ${b} + ${c}x + ${d} = ${correct}.`
-  };
-}
-
-function genDistributive() {
-  const k=randInt(2,9), m=randInt(1,6), n=randInt(-6,6);
-  const correct=formatLinear(k*m,k*n);
-
-  let choices=[correct,formatLinear(m+n,k),formatLinear(k*m,n),formatLinear(m,k*n)];
-  shuffle(choices);
-
-  return {
-    statement:`Développer : ${k}(${m}x ${n>=0?"+":"-"} ${Math.abs(n)}).`,
-    choices,
-    correctIndex:choices.indexOf(correct),
-    explanation:`k×${m}x = ${k*m}x, k×${n} = ${k*n}.`
-  };
-}
-
-function genEquation() {
-  const a=randInt(2,7), x=randInt(-5,8), b=randInt(-9,9);
-  const c=a*x+b;
-
-  let choices=[String(x),String(x+1),String(x-1),String(-x)];
-  shuffle(choices);
-
-  return {
-    statement:`Résoudre : ${a}x ${b>=0?"+":"-"}${Math.abs(b)} = ${c}.`,
-    choices,
-    correctIndex:choices.indexOf(String(x)),
-    explanation:`${a}x = ${c-b}, donc x=(${c-b})/${a} = ${x}.`
-  };
-}
-
-function genIdentity() {
-  const a=randInt(1,6), b=randInt(1,6);
-  const correct=`${a*a}x<sup>2</sup> ${2*a*b>=0?"+":"-"} ${Math.abs(2*a*b)}x + ${b*b}`;
-
-  let choices=[correct,`${a*a}x<sup>2</sup> + ${b*b}`,`${a*a}x<sup>2</sup> – ${Math.abs(2*a*b)}x`,`${a*a}x<sup>2</sup> + ${2*b}`];
-  shuffle(choices);
-
-  return {
-    statement:`Développer : (${a}x + ${b})²`,
-    choices,
-    correctIndex:choices.indexOf(correct),
-    explanation:`(u+v)² = u² + 2uv + v².`
-  };
-}
-
-function genFactorisation() {
-  const k=randInt(2,9), m=randInt(1,7), n=randInt(1,7);
-  const correct = `${k}(${m}x + ${n})`;
-
-  let choices=[correct, `${k+m}x + ${n}`, `${k}( ${m+n}x + ${n})`, `${k}( ${m}x + ${n*k})`];
-  shuffle(choices);
-
-  return {
-    statement:`Factoriser : ${k*m}x + ${k*n}.`,
-    choices,
-    correctIndex:choices.indexOf(correct),
-    explanation:`On met ${k} en facteur : ${k}( ${m}x + ${n} ).`
-  };
-}
-
-/* ------- liste des générateurs ------- */
-
-const generators = [
-  genCompareNumbers,
-  genFractions,
-  genPowers,
-  genPercentConversion,
-  genOrderMagnitude,
-  genLiteral,
-  genDistributive,
-  genEquation,
-  genIdentity,
-  genFactorisation
-];
-
-/* ------- moteur ------- */
-
-function generateQuiz() {
-  quizData=[];
-  for (let i=0;i<NB_QUESTIONS;i++){
-    const gen = generators[randInt(0,generators.length-1)];
-    quizData.push(gen());
-  }
-}
-
-function renderQuiz() {
-  quizElement.innerHTML="";
-  quizData.forEach((q,i)=>{
-    const box=document.createElement("div");
-    box.className="question";
-    box.dataset.index=i;
-
-    const st=document.createElement("p");
-    st.className="statement";
-    st.innerHTML=`Question ${i+1}. ${q.statement}`;
-    box.appendChild(st);
-
-    const choices=document.createElement("div");
-    choices.className="choices";
-
-    q.choices.forEach((c,j)=>{
-      const label=document.createElement("label");
-      const input=document.createElement("input");
-      input.type="radio"; input.name=`q${i}`; input.value=j;
-      const span=document.createElement("span");
-
-      span.innerHTML=c;
-      label.appendChild(input);
-      label.appendChild(span);
-      choices.appendChild(label);
-    });
-
-    box.appendChild(choices);
-
-    const fb=document.createElement("div");
-    fb.className="feedback";
-    box.appendChild(fb);
-
-    quizElement.appendChild(box);
-  });
-
-  resultElement.textContent="";
-}
-
-function correctQuiz() {
-  let score=0;
-  quizData.forEach((q,i)=>{
-    const box=document.querySelector(`.question[data-index="${i}"]`);
-    const fb=box.querySelector(".feedback");
-    const selected=box.querySelector("input:checked");
-
-    box.classList.remove("correct","incorrect");
-
-    if (!selected){
-      fb.textContent="Choisis une réponse.";
-      return;
-    }
-    if (Number(selected.value) === q.correctIndex){
-      score++;
-      box.classList.add("correct");
-      fb.innerHTML=`Bonne réponse ! ${q.explanation}`;
-    } else {
-      box.classList.add("incorrect");
-      fb.innerHTML=`Réponse attendue : <strong>${q.choices[q.correctIndex]}</strong>. ${q.explanation}`;
-    }
-  });
-  resultElement.textContent=`Score : ${score}/${quizData.length}`;
-}
-
-function showAllAnswers() {
-  quizData.forEach((q,i)=>{
-    const box=document.querySelector(`.question[data-index="${i}"]`);
-    const fb=box.querySelector(".feedback");
-    box.classList.remove("incorrect");
-    box.classList.add("correct");
-    fb.innerHTML=`Réponse : <strong>${q.choices[q.correctIndex]}</strong>. ${q.explanation}`;
-  });
-  resultElement.textContent="Réponses affichées.";
-}
-
-newSetButton.addEventListener("click", ()=>{ generateQuiz(); renderQuiz(); });
-correctButton.addEventListener("click", correctQuiz);
-showAnswersButton.addEventListener("click", showAllAnswers);
-
-generateQuiz();
-renderQuiz();
-</script>
-
-</body>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Calcul numérique · Automatismes</title>
+    <link rel="stylesheet" href="styles.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <script type="module" src="js/site.js" defer></script>
+    <script type="module" src="js/quiz-page.js" defer></script>
+  </head>
+  <body class="theme-calcul" data-theme-page="calcul">
+    <header class="hero hero--compact" id="top">
+      <nav class="nav">
+        <a class="logo" href="index.html">Automatismes</a>
+        <ul class="nav__list">
+          <li><a href="calcul.html" class="active">Calcul</a></li>
+          <li><a href="proportions.html">Proportions</a></li>
+          <li><a href="evolutions.html">Évolutions</a></li>
+          <li><a href="fonctions.html">Fonctions</a></li>
+          <li><a href="statistiques.html">Statistiques</a></li>
+          <li><a href="probabilites.html">Probabilités</a></li>
+        </ul>
+        <div class="nav__actions">
+          <a class="nav__link" href="index.html">Accueil</a>
+          <button class="theme-toggle" id="themeToggle" type="button" aria-pressed="false">
+            Mode sombre
+          </button>
+        </div>
+      </nav>
+      <div class="hero__content">
+        <p class="eyebrow">Générateur</p>
+        <h1>Calcul numérique et algébrique</h1>
+        <p>
+          Travaille mentalement les simplifications, équations, puissances et
+          manipulations de fractions. Chaque série propose 10 questions pour
+          muscler les automatismes.
+        </p>
+        <div class="hero__cta">
+          <a class="btn" href="#entrainement">Lancer une série</a>
+          <a class="btn btn--ghost" href="index.html">← Retour</a>
+        </div>
+      </div>
+    </header>
+
+    <main>
+      <section class="section intro">
+        <div class="info-grid">
+          <article class="info-card">
+            <p class="eyebrow">Compétences associées</p>
+            <h2>Ce que tu révises</h2>
+            <ul>
+              <li>Résolution de petites équations linéaires.</li>
+              <li>Calculs fractionnaires et puissances.</li>
+              <li>Manipulations algébriques rapides.</li>
+            </ul>
+          </article>
+          <article class="info-card">
+            <p class="eyebrow">Conseils de réussite</p>
+            <h2>Pour gagner en vitesse</h2>
+            <ul>
+              <li>Note les étapes clés pour repérer les erreurs.</li>
+              <li>Identifie les questions qui nécessitent encore une fiche.</li>
+              <li>Active le mode test pour simuler l'épreuve.</li>
+            </ul>
+          </article>
+        </div>
+      </section>
+
+      <section class="module" id="entrainement">
+        <div class="module__header">
+          <p class="eyebrow">Session active</p>
+          <h2>QCM calculs</h2>
+          <p>10 questions auto-correctives, corrections détaillées et suivi du temps.</p>
+        </div>
+
+        <div class="generator" role="region" aria-label="Générateur de QCM">
+          <p class="generator__intro">
+            Clique sur « Nouvelle série » pour regénérer les questions. Tu peux
+            afficher toutes les réponses ou corriger ta sélection à tout moment.
+          </p>
+
+          <div class="generator__actions" id="controls">
+            <button class="btn" type="button" id="newSet">Nouvelle série</button>
+            <button class="btn btn--ghost" type="button" id="correct">Corriger</button>
+            <button class="btn btn--ghost" type="button" id="showAnswers">Afficher toutes les réponses</button>
+          </div>
+
+          <label class="toggle" for="timedMode">
+            <span>Mode test chronométré (5 min)</span>
+            <input type="checkbox" id="timedMode" role="switch" />
+            <span class="toggle__control" aria-hidden="true"></span>
+          </label>
+
+          <div
+            class="progress"
+            id="progressTrack"
+            role="progressbar"
+            aria-valuemin="0"
+            aria-valuenow="0"
+            aria-valuemax="10"
+          >
+            <span class="progress__fill" id="progressFill"></span>
+          </div>
+          <p class="progress__label" id="progressLabel">Progression : 0/0</p>
+
+          <div id="quiz" class="generator__questions" aria-live="polite"></div>
+
+          <div class="session-summary" aria-live="polite">
+            <div class="session-summary__item">
+              <p>Temps écoulé</p>
+              <strong id="elapsedTime">00:00</strong>
+            </div>
+            <div class="session-summary__item">
+              <p>Score</p>
+              <strong id="scoreDisplay">—</strong>
+            </div>
+            <div class="session-summary__item">
+              <p>Mode test</p>
+              <strong id="testModeBadge">Inactif</strong>
+            </div>
+            <div class="session-summary__item">
+              <p>Compte à rebours</p>
+              <strong id="countdownDisplay">—</strong>
+            </div>
+          </div>
+          <p class="session-summary__message" id="motivationalMessage" aria-live="polite"></p>
+        </div>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <p>&copy; <span id="year"></span> Automatismes — Prépa Première Spé.</p>
+      <a href="https://github.com/issues" target="_blank" rel="noreferrer">
+        Signaler une erreur → GitHub Issues
+      </a>
+      <a href="#top">Retour en haut</a>
+    </footer>
+  </body>
 </html>
-

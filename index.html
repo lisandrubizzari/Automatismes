@@ -11,127 +11,134 @@
       href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap"
       rel="stylesheet"
     />
+    <script type="module" src="js/site.js" defer></script>
   </head>
-  <body>
+  <body class="theme-home">
     <header class="hero" id="top">
       <nav class="nav">
         <a class="logo" href="index.html">Automatismes</a>
         <ul class="nav__list">
-          <li><a href="calcul.html">Calcul numérique</a></li>
+          <li><a href="calcul.html">Calcul</a></li>
           <li><a href="proportions.html">Proportions</a></li>
           <li><a href="evolutions.html">Évolutions</a></li>
           <li><a href="fonctions.html">Fonctions</a></li>
           <li><a href="statistiques.html">Statistiques</a></li>
           <li><a href="probabilites.html">Probabilités</a></li>
         </ul>
+        <div class="nav__actions">
+          <button class="theme-toggle" id="themeToggle" type="button" aria-pressed="false">
+            Mode sombre
+          </button>
+        </div>
       </nav>
       <div class="hero__content">
-        <p class="eyebrow">Préparation Bac · Première</p>
-        <h1>Centralise tes générateurs d'automatismes</h1>
+        <p class="eyebrow">Préparation Bac · Première spécialité</p>
+        <h1>Entraîne-toi pour réussir l'épreuve anticipée</h1>
         <p>
-          Commence par comprendre chaque famille de tâches, puis bascule sur le
-          générateur correspondant pour créer des QCM illimités comme à l'épreuve
-          officielle.
+          6 parcours thématiques, des QCM générés en continu, un suivi du temps et
+          des explications détaillées pour installer les bons réflexes avant le
+          jour J.
         </p>
-        <a class="btn" href="#themes">Voir les 6 parcours</a>
+        <div class="hero__cta">
+          <a class="btn" href="#themes">Explorer les thèmes</a>
+          <a class="btn btn--ghost" href="#methodes">Méthode de travail</a>
+        </div>
       </div>
     </header>
 
     <main>
-      <section class="section intro">
+      <section class="section intro" id="methodes">
         <div>
           <h2>Mode d'emploi</h2>
           <p>
-            Utilise la page d'accueil pour choisir ton thème, lis les
-            compétences visées puis ouvre le générateur associé afin de t'entraîner
-            en autonomie.
+            Choisis un thème, lance une série de 10 questions et suis la barre de
+            progression pour rester concentré. Le mode clair/sombre, le mode test
+            de 5 minutes et les résumés motivants t'accompagnent partout.
           </p>
         </div>
         <ul>
-          <li>Chaque générateur propose un QCM aléatoire et auto-correctif.</li>
-          <li>Une explication détaillée accompagne toutes les corrections.</li>
-          <li>Bouton «&nbsp;Nouvelle question&nbsp;» pour varier les situations.</li>
+          <li>Questions inédites à chaque session avec correction immédiate.</li>
+          <li>Explications claires, accessibles clavier et compatibles mobile.</li>
+          <li>Résumé final avec score, temps écoulé et conseils.</li>
         </ul>
       </section>
 
-      <div id="themes" class="themes-grid">
-        <section class="module">
-          <div class="module__header">
-            <p class="eyebrow">Parcours 1</p>
-            <h2>Calcul numérique et algébrique</h2>
-            <p>
-              Simplifications, identités remarquables et factorisations pour
-              résoudre de tête.
-            </p>
-            <a class="btn" href="calcul.html">Accéder au générateur</a>
-          </div>
-        </section>
+      <section class="section" id="themes">
+        <header class="section__header">
+          <p class="eyebrow">Parcours thématiques</p>
+          <h2>Choisis ton automatisme du jour</h2>
+          <p>
+            Chaque carte renvoie vers un générateur spécialisé avec rappels de
+            compétences, conseils et mode test.
+          </p>
+        </header>
+        <div class="themes-grid">
+          <article class="theme-card" data-topic="calcul">
+            <span class="theme-card__icon" aria-hidden="true">∑</span>
+            <h3>Calcul numérique & algébrique</h3>
+            <p>Identités remarquables, fractions, puissances et résolutions.</p>
+            <a class="btn btn--small" href="calcul.html">Ouvrir le générateur</a>
+          </article>
 
-        <section class="module">
-          <div class="module__header">
-            <p class="eyebrow">Parcours 2</p>
-            <h2>Proportions et pourcentages</h2>
-            <p>
-              Ratios, coefficients multiplicateurs et remises successives.
-            </p>
-            <a class="btn" href="proportions.html">Accéder au générateur</a>
-          </div>
-        </section>
+          <article class="theme-card" data-topic="proportions">
+            <span class="theme-card__icon" aria-hidden="true">%</span>
+            <h3>Proportions & pourcentages</h3>
+            <p>Règle de trois, coefficients multiplicateurs et remises.</p>
+            <a class="btn btn--small" href="proportions.html">Ouvrir le générateur</a>
+          </article>
 
-        <section class="module">
-          <div class="module__header">
-            <p class="eyebrow">Parcours 3</p>
-            <h2>Évolutions et variations</h2>
-            <p>
-              Calculs d'évolution, suites multiplicatives et lecture d'indices.
-            </p>
-            <a class="btn" href="evolutions.html">Accéder au générateur</a>
-          </div>
-        </section>
+          <article class="theme-card" data-topic="evolutions">
+            <span class="theme-card__icon" aria-hidden="true">↗︎</span>
+            <h3>Évolutions & variations</h3>
+            <p>Taux composés, valeur initiale/finale et lectures d'indices.</p>
+            <a class="btn btn--small" href="evolutions.html">Ouvrir le générateur</a>
+          </article>
 
-        <section class="module">
-          <div class="module__header">
-            <p class="eyebrow">Parcours 4</p>
-            <h2>Fonctions et représentations</h2>
-            <p>
-              Lecture graphique, dérivées et résolutions d'équations.
-            </p>
-            <a class="btn" href="fonctions.html">Accéder au générateur</a>
-          </div>
-        </section>
+          <article class="theme-card" data-topic="fonctions">
+            <span class="theme-card__icon" aria-hidden="true">ƒ</span>
+            <h3>Fonctions & représentations</h3>
+            <p>Lecture graphique, dérivées locales et variations.</p>
+            <a class="btn btn--small" href="fonctions.html">Ouvrir le générateur</a>
+          </article>
 
-        <section class="module">
-          <div class="module__header">
-            <p class="eyebrow">Parcours 5</p>
-            <h2>Statistiques</h2>
-            <p>
-              Séries pondérées, médianes et indicateurs de dispersion.
-            </p>
-            <a class="btn" href="statistiques.html">Accéder au générateur</a>
-          </div>
-        </section>
+          <article class="theme-card" data-topic="statistiques">
+            <span class="theme-card__icon" aria-hidden="true">Σ</span>
+            <h3>Statistiques</h3>
+            <p>Moyennes pondérées, médianes et interprétation de séries.</p>
+            <a class="btn btn--small" href="statistiques.html">Ouvrir le générateur</a>
+          </article>
 
-        <section class="module">
-          <div class="module__header">
-            <p class="eyebrow">Parcours 6</p>
-            <h2>Probabilités</h2>
-            <p>
-              Arbres, indépendance et loi binomiale à deux issues.
-            </p>
-            <a class="btn" href="probabilites.html">Accéder au générateur</a>
-          </div>
-        </section>
-      </div>
+          <article class="theme-card" data-topic="probabilites">
+            <span class="theme-card__icon" aria-hidden="true">π</span>
+            <h3>Probabilités</h3>
+            <p>Arbres, indépendance, événements contraires et binomiale.</p>
+            <a class="btn btn--small" href="probabilites.html">Ouvrir le générateur</a>
+          </article>
+        </div>
+      </section>
+
+      <section class="section tips" aria-label="Conseils pour rester régulier">
+        <div>
+          <h2>Conseils de réussite</h2>
+          <p>
+            Bloque 5 minutes par thème, active le mode test une fois par jour et
+            note tes scores pour visualiser ta progression.
+          </p>
+        </div>
+        <ul>
+          <li>Lis les explications même lorsque tu réussis la question.</li>
+          <li>Utilise le mode sombre la nuit pour limiter la fatigue visuelle.</li>
+          <li>Partage tes retours sur GitHub pour faire évoluer l'outil.</li>
+        </ul>
+      </section>
     </main>
 
     <footer class="footer">
-      <p>
-        &copy; <span id="year"></span> Automatisation des calculs — Prépare ton
-        Bac sereinement.
-      </p>
+      <p>&copy; <span id="year"></span> Automatismes — Prépa Première Spé.</p>
+      <a href="https://github.com/issues" target="_blank" rel="noreferrer">
+        Signaler une erreur → GitHub Issues
+      </a>
       <a href="#top">Retour en haut</a>
     </footer>
-
-    <script src="scripts.js"></script>
   </body>
 </html>
