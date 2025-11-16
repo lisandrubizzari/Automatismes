@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Évolutions et variations · Automatismes Première</title>
+    <title>Évolutions et variations · Automatismes</title>
     <link rel="stylesheet" href="styles.css" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -11,73 +11,136 @@
       href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap"
       rel="stylesheet"
     />
+    <script type="module" src="js/site.js" defer></script>
+    <script type="module" src="js/quiz-page.js" defer></script>
   </head>
-  <body>
+  <body class="theme-evolutions" data-theme-page="evolutions">
     <header class="hero hero--compact" id="top">
       <nav class="nav">
         <a class="logo" href="index.html">Automatismes</a>
         <ul class="nav__list">
-          <li><a href="calcul.html">Calcul numérique</a></li>
+          <li><a href="calcul.html">Calcul</a></li>
           <li><a href="proportions.html">Proportions</a></li>
-          <li><a href="evolutions.html">Évolutions</a></li>
+          <li><a href="evolutions.html" class="active">Évolutions</a></li>
           <li><a href="fonctions.html">Fonctions</a></li>
           <li><a href="statistiques.html">Statistiques</a></li>
           <li><a href="probabilites.html">Probabilités</a></li>
         </ul>
+        <div class="nav__actions">
+          <a class="nav__link" href="index.html">Accueil</a>
+          <button class="theme-toggle" id="themeToggle" type="button" aria-pressed="false">
+            Mode sombre
+          </button>
+        </div>
       </nav>
       <div class="hero__content">
         <p class="eyebrow">Générateur</p>
         <h1>Évolutions et variations</h1>
         <p>
-          Maîtrise les enchaînements de taux, les suites géométriques et la
-          lecture d'indices économiques.
+          Taux d'évolution, valeur initiale/finale, conversions additive ↔
+          multiplicative, enchaînements et taux réciproques : tout est regroupé
+          ici.
         </p>
-        <a class="btn" href="#entrainement">Lancer un QCM</a>
+        <div class="hero__cta">
+          <a class="btn" href="#entrainement">Lancer une série</a>
+          <a class="btn btn--ghost" href="index.html">← Retour</a>
+        </div>
       </div>
     </header>
 
     <main>
       <section class="section intro">
-        <div>
-          <h2>Compétences ciblées</h2>
-          <p>
-            Choisir le bon modèle (additif ou multiplicatif) et interpréter les
-            variations d'un indicateur au fil du temps.
-          </p>
+        <div class="info-grid">
+          <article class="info-card">
+            <p class="eyebrow">Compétences associées</p>
+            <h2>Ce que tu révises</h2>
+            <ul>
+              <li>Conversion entre variation additive et multiplicative.</li>
+              <li>Calculs de valeurs initiales, finales et taux globaux.</li>
+              <li>Taux réciproques et évolutions successives.</li>
+            </ul>
+          </article>
+          <article class="info-card">
+            <p class="eyebrow">Conseils de réussite</p>
+            <h2>Pour éviter les pièges</h2>
+            <ul>
+              <li>Pose toujours les coefficients multiplicateurs.</li>
+              <li>Utilise la calculatrice pour vérifier la cohérence du signe.</li>
+              <li>Quand tu bloques, repars de la formule générale.</li>
+            </ul>
+          </article>
         </div>
-        <ul>
-          <li>Calculs d'évolution absolue et relative.</li>
-          <li>Suites définies par récurrence multiplicative.</li>
-          <li>Indices base 100 et lecture d'un tableau de variations.</li>
-        </ul>
       </section>
 
       <section class="module" id="entrainement">
         <div class="module__header">
           <p class="eyebrow">Session active</p>
-          <h2>Générateur de QCM évolutions</h2>
-          <p>Entraîne-toi à reconnaître le signe d'une variation et son amplitude.</p>
+          <h2>QCM évolutions</h2>
+          <p>10 questions variées sur toutes les notions d'évolution.</p>
         </div>
-        <div class="qcm" data-category="evolutions">
-          <p class="qcm__question"></p>
-          <div class="qcm__options"></div>
-          <div class="qcm__actions">
-            <button class="btn qcm__validate">Valider</button>
-            <button class="btn btn--ghost qcm__next">Nouvelle question</button>
+
+        <div class="generator" role="region" aria-label="Générateur de QCM">
+          <p class="generator__intro">
+            Chaque question propose quatre réponses possibles. Utilise la barre de
+            progression pour suivre ton avancée et active le mode test pour un
+            challenge 5 minutes.
+          </p>
+
+          <div class="generator__actions" id="controls">
+            <button class="btn" type="button" id="newSet">Nouvelle série</button>
+            <button class="btn btn--ghost" type="button" id="correct">Corriger</button>
+            <button class="btn btn--ghost" type="button" id="showAnswers">Afficher toutes les réponses</button>
           </div>
-          <p class="qcm__feedback" aria-live="polite"></p>
+
+          <label class="toggle" for="timedMode">
+            <span>Mode test chronométré (5 min)</span>
+            <input type="checkbox" id="timedMode" role="switch" />
+            <span class="toggle__control" aria-hidden="true"></span>
+          </label>
+
+          <div
+            class="progress"
+            id="progressTrack"
+            role="progressbar"
+            aria-valuemin="0"
+            aria-valuenow="0"
+            aria-valuemax="10"
+          >
+            <span class="progress__fill" id="progressFill"></span>
+          </div>
+          <p class="progress__label" id="progressLabel">Progression : 0/0</p>
+
+          <div id="quiz" class="generator__questions" aria-live="polite"></div>
+
+          <div class="session-summary" aria-live="polite">
+            <div class="session-summary__item">
+              <p>Temps écoulé</p>
+              <strong id="elapsedTime">00:00</strong>
+            </div>
+            <div class="session-summary__item">
+              <p>Score</p>
+              <strong id="scoreDisplay">—</strong>
+            </div>
+            <div class="session-summary__item">
+              <p>Mode test</p>
+              <strong id="testModeBadge">Inactif</strong>
+            </div>
+            <div class="session-summary__item">
+              <p>Compte à rebours</p>
+              <strong id="countdownDisplay">—</strong>
+            </div>
+          </div>
+          <p class="session-summary__message" id="motivationalMessage" aria-live="polite"></p>
         </div>
       </section>
     </main>
 
     <footer class="footer">
-      <p>
-        &copy; <span id="year"></span> Automatisation des calculs — Prépare ton
-        Bac sereinement.
-      </p>
+      <p>&copy; <span id="year"></span> Automatismes — Prépa Première Spé.</p>
+      <a href="https://github.com/issues" target="_blank" rel="noreferrer">
+        Signaler une erreur → GitHub Issues
+      </a>
       <a href="#top">Retour en haut</a>
     </footer>
-
-    <script src="scripts.js"></script>
   </body>
 </html>
