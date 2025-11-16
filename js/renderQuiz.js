@@ -39,7 +39,12 @@ export function createQuizRenderer({ container, progressFill, progressTrack, pro
 
       const statement = document.createElement('p');
       statement.className = 'question-card__statement';
-      statement.textContent = `Question ${index + 1}. ${question.statement}`;
+      const prefix = `Question ${index + 1}. `;
+      if (question.statementHTML) {
+        statement.innerHTML = `${prefix}${question.statementHTML}`;
+      } else {
+        statement.textContent = `${prefix}${question.statement}`;
+      }
       article.appendChild(statement);
 
       const choicesWrapper = document.createElement('div');

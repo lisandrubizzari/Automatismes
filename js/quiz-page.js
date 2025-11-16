@@ -8,6 +8,7 @@ const progressFill = document.getElementById('progressFill');
 const progressTrack = document.getElementById('progressTrack');
 const progressLabel = document.getElementById('progressLabel');
 const renderer = createQuizRenderer({ container: quizContainer, progressFill, progressTrack, progressLabel });
+const generatorRegion = document.querySelector('.generator');
 
 const newSetButton = document.getElementById('newSet');
 const correctButton = document.getElementById('correct');
@@ -105,6 +106,10 @@ function updateScoreDisplay(score, total) {
 }
 
 function startNewSet() {
+  if (generatorRegion) {
+    generatorRegion.classList.add('is-loading');
+    setTimeout(() => generatorRegion.classList.remove('is-loading'), 450);
+  }
   questions = buildQuestionSet(themeKey, 10);
   renderer.render(questions);
   sessionStart = Date.now();
