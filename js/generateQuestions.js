@@ -195,26 +195,7 @@ function genReciprocal() {
   };
 }
 
-function genEvolutionRateBetweenValues() {
-  const initial = randInt(100, 700);
-  const final = randInt(100, 900);
-  const rate = Math.round(((final - initial) / initial) * 100);
-  const wrongs = [`${final - initial} %`, `${(final / initial).toFixed(2)} %`, `${rate + randInt(-6, 6)} %`];
-  return {
-    statement: `Une valeur passe de ${initial} à ${final}. Quel est le taux d'évolution ?`,
-    ...buildChoiceSet(`${rate} %`, wrongs),
-    explanation: `Taux = (VF - VI)/VI × 100 = (${final} - ${initial})/${initial} × 100 = ${rate} %.`,
-  };
-}
-
-const evolutionQuestions = [
-  genAdditiveToMultiplicative,
-  genFinalValue,
-  genInitialValue,
-  genSuccessiveRates,
-  genReciprocal,
-  genEvolutionRateBetweenValues,
-];
+const evolutionQuestions = [genAdditiveToMultiplicative, genFinalValue, genInitialValue, genSuccessiveRates, genReciprocal];
 
 function genEvaluateLinearFunction() {
   const a = randInt(-5, 6);
