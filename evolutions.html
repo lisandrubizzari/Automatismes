@@ -1,333 +1,147 @@
 <!DOCTYPE html>
 <html lang="fr">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Évolutions · Automatismes Première</title>
-  <link rel="stylesheet" href="styles.css" />
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet" />
-</head>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Évolutions et variations · Automatismes</title>
+    <link rel="stylesheet" href="styles.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <script type="module" src="js/site.js" defer></script>
+    <script type="module" src="js/quiz-page.js" defer></script>
+  </head>
+  <body class="theme-evolutions" data-theme-page="evolutions">
+    <header class="hero hero--compact" id="top">
+      <nav class="nav">
+        <a class="logo" href="index.html">Automatismes</a>
+        <ul class="nav__list">
+          <li><a href="calcul.html">Calcul</a></li>
+          <li><a href="proportions.html">Proportions</a></li>
+          <li><a href="evolutions.html" class="active">Évolutions</a></li>
+          <li><a href="fonctions.html">Fonctions</a></li>
+          <li><a href="statistiques.html">Statistiques</a></li>
+          <li><a href="probabilites.html">Probabilités</a></li>
+        </ul>
+        <div class="nav__actions">
+          <a class="nav__link" href="index.html">Accueil</a>
+          <button class="theme-toggle" id="themeToggle" type="button" aria-pressed="false">
+            Mode sombre
+          </button>
+        </div>
+      </nav>
+      <div class="hero__content">
+        <p class="eyebrow">Générateur</p>
+        <h1>Évolutions et variations</h1>
+        <p>
+          Convertis des pourcentages en coefficients multiplicateurs, enchaîne les évolutions
+          successives et retrouve instantanément valeurs initiales ou finales.
+        </p>
+        <div class="hero__cta">
+          <a class="btn" href="#entrainement">Lancer une série</a>
+          <a class="btn btn--ghost" href="index.html">← Retour</a>
+        </div>
+      </div>
+    </header>
 
-<body>
-<header class="hero hero--compact" id="top">
-  <nav class="nav">
-    <a class="logo" href="index.html">Automatismes</a>
-    <ul class="nav__list">
-      <li><a href="calcul.html">Calcul numérique</a></li>
-      <li><a href="proportions.html">Proportions</a></li>
-      <li><a href="evolutions.html">Évolutions</a></li>
-      <li><a href="fonctions.html">Fonctions</a></li>
-      <li><a href="statistiques.html">Statistiques</a></li>
-      <li><a href="probabilites.html">Probabilités</a></li>
-    </ul>
-  </nav>
+    <main>
+      <section class="section intro">
+        <div class="info-grid">
+          <article class="info-card">
+            <p class="eyebrow">Compétences associées</p>
+            <h2>Ce que tu révises</h2>
+            <ul>
+              <li>Passage additive ↔ multiplicative et lecture de coefficients.</li>
+              <li>Recherche d'un taux d'évolution, d'une valeur initiale ou finale.</li>
+              <li>Évolutions successives et calcul du taux global.</li>
+            </ul>
+          </article>
+          <article class="info-card">
+            <p class="eyebrow">Conseils de réussite</p>
+            <h2>Pour rester précis</h2>
+            <ul>
+              <li>Note systématiquement le coefficient multiplicateur associé au taux.</li>
+              <li>Utilise les parenthèses : VF = VI × (1 + t) et VI = VF / (1 + t).</li>
+              <li>Vérifie les ordres de grandeur avant de valider ta réponse.</li>
+            </ul>
+          </article>
+        </div>
+      </section>
 
-  <div class="hero__content">
-    <p class="eyebrow">Générateur</p>
-    <h1>Évolutions et variations</h1>
-    <p>
-      Entraîne-toi aux évolutions successives, taux d'évolution, valeur finale ou initiale,
-      conversions additive ↔ multiplicative… tout ce qu'on attend à l'écrit.
-    </p>
-    <div class="hero__cta">
-      <a class="btn" href="#entrainement">Lancer une série</a>
-      <a class="btn btn--ghost" href="index.html">← Retour</a>
-    </div>
-  </div>
-</header>
+      <section class="module" id="entrainement">
+        <div class="module__header">
+          <p class="eyebrow">Session active</p>
+          <h2>QCM évolutions</h2>
+          <p>10 questions variées sur taux d'évolution, valeurs et cascades.</p>
+        </div>
 
-<main>
-<section class="section intro">
-  <div>
-    <h2>Compétences mobilisées</h2>
-    <p>
-      Applique ou inverse un taux d'évolution, détermine la valeur initiale,
-      enchaîne des évolutions successives et interprète les variations.
-    </p>
-  </div>
-  <ul>
-    <li>10 questions générées aléatoirement à chaque session.</li>
-    <li>Explications détaillées pour consolider les automatismes.</li>
-    <li>Boutons « Corriger » ou « Afficher toutes les réponses ».</li>
-  </ul>
-</section>
+        <div class="generator" role="region" aria-label="Générateur de QCM">
+          <p class="generator__intro">
+            Lance une nouvelle série pour mélanger hausses, baisses, taux réciproques et évolutions
+            composées. Analyse les corrections détaillées pour progresser.
+          </p>
+          <p class="generator__note">
+            Ce générateur couvre toutes les compétences du thème selon le BO officiel.
+          </p>
 
-<section class="module" id="entrainement">
-  <div class="module__header">
-    <p class="eyebrow">Session active</p>
-    <h2>Générateur d'évolutions</h2>
-    <p>Crée un QCM complet sur toutes les notions d'évolutions.</p>
-  </div>
+          <div class="generator__actions" id="controls">
+            <button class="btn" type="button" id="newSet">Nouvelle série</button>
+            <button class="btn btn--ghost" type="button" id="correct">Corriger</button>
+            <button class="btn btn--ghost" type="button" id="showAnswers">Afficher toutes les réponses</button>
+          </div>
 
-  <div class="generator">
-    <p class="generator__intro">
-      Chaque question propose quatre réponses possibles.
-      Clique sur « Nouvelle série » pour changer de questions.
-    </p>
+          <label class="toggle" for="timedMode">
+            <span>Mode test chronométré (5 min)</span>
+            <input type="checkbox" id="timedMode" role="switch" />
+            <span class="toggle__control" aria-hidden="true"></span>
+          </label>
 
-    <div class="generator__actions" id="controls">
-      <button class="btn" type="button" id="newSet">Nouvelle série</button>
-      <button class="btn btn--ghost" type="button" id="correct">Corriger</button>
-      <button class="btn btn--ghost" type="button" id="showAnswers">Afficher toutes les réponses</button>
-    </div>
+          <div
+            class="progress"
+            id="progressTrack"
+            role="progressbar"
+            aria-valuemin="0"
+            aria-valuenow="0"
+            aria-valuemax="10"
+          >
+            <span class="progress__fill" id="progressFill"></span>
+          </div>
+          <p class="progress__label" id="progressLabel">Progression : 0/0</p>
 
-    <div id="quiz" class="generator__questions"></div>
-    <div id="result" class="generator__result" aria-live="polite"></div>
-  </div>
-</section>
-</main>
+          <div id="quiz" class="generator__questions" aria-live="polite"></div>
 
-<footer class="footer">
-  <p>&copy; <span id="year"></span> Préparation aux automatismes — Première Spé.</p>
-  <a href="#top">Retour en haut</a>
-</footer>
+          <div class="session-summary" aria-live="polite">
+            <div class="session-summary__item">
+              <p>Temps écoulé</p>
+              <strong id="elapsedTime">00:00</strong>
+            </div>
+            <div class="session-summary__item">
+              <p>Score</p>
+              <strong id="scoreDisplay">—</strong>
+            </div>
+            <div class="session-summary__item">
+              <p>Mode test</p>
+              <strong id="testModeBadge">Inactif</strong>
+            </div>
+            <div class="session-summary__item">
+              <p>Compte à rebours</p>
+              <strong id="countdownDisplay">—</strong>
+            </div>
+          </div>
+          <p class="session-summary__message" id="motivationalMessage" aria-live="polite"></p>
+        </div>
+      </section>
+    </main>
 
-<script>
-document.getElementById("year").textContent = new Date().getFullYear();
-
-const NB_QUESTIONS = 10;
-let quizData = [];
-
-function randInt(a,b){return Math.floor(Math.random()*(b-a+1))+a;}
-function shuffle(arr){for(let i=arr.length-1;i>0;i--){const j=randInt(0,i);[arr[i],arr[j]]=[arr[j],arr[i]];}}
-
-function genAdditiveToMultiplicative() {
-  const p = randInt(2,30);
-  const increase = Math.random() < 0.5;
-  const mult = increase ? 1 + p/100 : 1 - p/100;
-
-  const correct = `Multiplier par ${mult}`;
-  const wrong1 = `Multiplier par ${p}`;
-  const wrong2 = `Multiplier par ${p/10}`;
-  const wrong3 = increase ? `Multiplier par ${1 - p/100}` : `Multiplier par ${1 + p/100}`;
-
-  const choices = [correct, wrong1, wrong2, wrong3];
-  shuffle(choices);
-
-  return {
-    statement: `${increase ? "Augmenter" : "Diminuer"} de ${p} % revient à :`,
-    choices,
-    correctIndex: choices.indexOf(correct),
-    explanation: `${increase ? "Augmenter" : "Diminuer"} de ${p}% ↔ multiplier par ${mult}.`
-  };
-}
-
-function genFinalValue() {
-  const VI = randInt(100,900);
-  const p = randInt(5,40);
-  const coeff = 1 + p/100;
-  const VF = Math.round(VI * coeff);
-
-  const correct = `${VF}`;
-  const wrong1 = `${VI + p}`;
-  const wrong2 = `${Math.round(VI*(1 - p/100))}`;
-  const wrong3 = `${VI}`;
-
-  const choices = [correct, wrong1, wrong2, wrong3];
-  shuffle(choices);
-
-  return {
-    statement: `Une quantité de ${VI} augmente de ${p} %. Quelle est la valeur finale ?`,
-    choices,
-    correctIndex: choices.indexOf(correct),
-    explanation: `VF = ${VI} × (1 + ${p}/100) = ${VI} × ${coeff} = ${VF}.`
-  };
-}
-
-function genInitialValue() {
-  const VI = randInt(100,900);
-  const p = randInt(5,40);
-  const coeff = 1 + p/100;
-  const VF = Math.round(VI * coeff);
-
-  const correct = `${VI}`;
-  const wrong1 = `${VF - p}`;
-  const wrong2 = `${Math.round(VF/ (1 - p/100))}`;
-  const wrong3 = `${VF}`;
-
-  const choices = [correct, wrong1, wrong2, wrong3];
-  shuffle(choices);
-
-  return {
-    statement: `La valeur finale après +${p}% est ${VF}. Quelle était la valeur initiale ?`,
-    choices,
-    correctIndex: choices.indexOf(correct),
-    explanation: `VI = VF / (1 + ${p}/100) = ${VF}/${coeff} = ${VI}.`
-  };
-}
-
-function genSuccessive() {
-  const a = randInt(-20,20);
-  const b = randInt(-20,20);
-
-  const coeffA = 1 + a/100;
-  const coeffB = 1 + b/100;
-  const globalCoeff = coeffA * coeffB;
-  const rate = Math.round((globalCoeff - 1)*100);
-
-  const correct = `${rate} %`;
-  const wrong1 = `${a + b} %`;
-  const wrong2 = `${a*b} %`;
-  const wrong3 = `${rate + randInt(-5,5)} %`;
-
-  const choices=[correct,wrong1,wrong2,wrong3];
-  shuffle(choices);
-
-  return {
-    statement: `On applique successivement ${a}% puis ${b}%. Quel est le taux global ?`,
-    choices,
-    correctIndex: choices.indexOf(correct),
-    explanation: `Coeff total = (1 + ${a}/100)(1 + ${b}/100) = ${globalCoeff.toFixed(3)} → taux global = ${rate} %.`,
-  };
-}
-
-function genReciprocal() {
-  const p = randInt(5,40);
-  const coeff = 1 + p/100;
-  const reciprocalCoeff = 1/coeff;
-  const rate = Math.round((reciprocalCoeff - 1)*100);
-
-  const correct = `${rate} %`;
-  const wrong1 = `${-p} %`;
-  const wrong2 = `${p} %`;
-  const wrong3 = `${-p/2} %`;
-
-  const choices=[correct,wrong1,wrong2,wrong3];
-  shuffle(choices);
-
-  return {
-    statement: `Une quantité augmente de ${p} %. De combien doit-elle évoluer ensuite pour revenir à la valeur initiale ?`,
-    choices,
-    correctIndex: choices.indexOf(correct),
-    explanation: `Coeff aller = ${coeff}. Le coeff retour = 1/${coeff.toFixed(3)} ≈ ${reciprocalCoeff.toFixed(3)} → taux ≈ ${rate} %.`,
-  };
-}
-
-function genEvolutionRate() {
-  const VI = randInt(100,700);
-  const VF = randInt(100,900);
-  const rate = Math.round((VF - VI)/VI * 100);
-
-  const correct = `${rate} %`;
-  const wrong1 = `${VF - VI} %`;
-  const wrong2 = `${VF/VI} %`;
-  const wrong3 = `${rate + randInt(-5,5)} %`;
-
-  const choices=[correct,wrong1,wrong2,wrong3];
-  shuffle(choices);
-
-  return {
-    statement: `Une valeur passe de ${VI} à ${VF}. Quel est le taux d'évolution ?`,
-    choices,
-    correctIndex: choices.indexOf(correct),
-    explanation: `Taux = (VF - VI)/VI × 100 = (${VF} - ${VI})/${VI} × 100 = ${rate} %.`,
-  };
-}
-
-const generators = [
-  genAdditiveToMultiplicative,
-  genFinalValue,
-  genInitialValue,
-  genSuccessive,
-  genReciprocal,
-  genEvolutionRate
-];
-
-function generateQuiz(){
-  quizData=[];
-  for(let i=0;i<NB_QUESTIONS;i++){
-    const gen = generators[randInt(0,generators.length-1)];
-    quizData.push(gen());
-  }
-}
-
-function renderQuiz(){
-  const quiz=document.getElementById("quiz");
-  quiz.innerHTML="";
-  quizData.forEach((q,i)=>{
-    const box=document.createElement("div");
-    box.className="question";
-    box.dataset.index=i;
-
-    const st=document.createElement("p");
-    st.className="statement";
-    st.innerHTML=`Question ${i+1}. ${q.statement}`;
-    box.appendChild(st);
-
-    const choices=document.createElement("div");
-    choices.className="choices";
-
-    q.choices.forEach((c,j)=>{
-      const label=document.createElement("label");
-      const input=document.createElement("input");
-      input.type="radio";
-      input.name=`q${i}`;
-      input.value=j;
-      label.appendChild(input);
-
-      const span=document.createElement("span");
-      span.innerHTML=c;
-      label.appendChild(span);
-
-      choices.appendChild(label);
-    });
-
-    box.appendChild(choices);
-
-    const feedback=document.createElement("div");
-    feedback.className="feedback";
-    box.appendChild(feedback);
-
-    quiz.appendChild(box);
-  });
-  document.getElementById("result").textContent="";
-}
-
-function correctQuiz(){
-  let score=0;
-  quizData.forEach((q,i)=>{
-    const box=document.querySelector(`.question[data-index="${i}"]`);
-    const feedback=box.querySelector(".feedback");
-    const selected=box.querySelector("input:checked");
-    box.classList.remove("correct","incorrect");
-
-    if(!selected){
-      feedback.textContent="Choisis une réponse.";
-      return;
-    }
-
-    const ans=Number(selected.value);
-    if(ans===q.correctIndex){
-      score++;
-      box.classList.add("correct");
-      feedback.innerHTML=`Bonne réponse ! ${q.explanation}`;
-    } else {
-      box.classList.add("incorrect");
-      feedback.innerHTML=`Réponse attendue : <span class="answer-text">${q.choices[q.correctIndex]}</span>. ${q.explanation}`;
-    }
-  });
-  document.getElementById("result").textContent=`Score : ${score} / ${quizData.length}`;
-}
-
-function showAllAnswers(){
-  quizData.forEach((q,i)=>{
-    const box=document.querySelector(`.question[data-index="${i}"]`);
-    const feedback=box.querySelector(".feedback");
-    box.classList.add("correct");
-    feedback.innerHTML=`Réponse : <span class="answer-text">${q.choices[q.correctIndex]}</span>. ${q.explanation}`;
-  });
-  document.getElementById("result").textContent="Toutes les réponses sont affichées.";
-}
-
-document.getElementById("newSet").addEventListener("click",()=>{generateQuiz();renderQuiz();});
-document.getElementById("correct").addEventListener("click",correctQuiz);
-document.getElementById("showAnswers").addEventListener("click",showAllAnswers);
-
-generateQuiz();
-renderQuiz();
-</script>
-
-</body>
+    <footer class="footer">
+      <p>&copy; <span id="year"></span> Automatismes — Prépa Première Spé.</p>
+      <a href="https://github.com/issues" target="_blank" rel="noreferrer">
+        Signaler une erreur → GitHub Issues
+      </a>
+      <a href="#top">Retour en haut</a>
+    </footer>
+  </body>
 </html>
