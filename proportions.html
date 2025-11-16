@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Proportions et pourcentages · Automatismes Première</title>
+    <title>Proportions et évolutions · Automatismes Première</title>
     <link rel="stylesheet" href="styles.css" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -11,6 +11,19 @@
       href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap"
       rel="stylesheet"
     />
+    <script>
+      window.MathJax = {
+        tex: {
+          inlineMath: [["\\(", "\\)"]],
+          displayMath: [["\\[", "\\]"]],
+          processEscapes: true,
+        },
+      };
+    </script>
+    <script
+      async
+      src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"
+    ></script>
   </head>
   <body>
     <header class="hero hero--compact" id="top">
@@ -27,45 +40,58 @@
       </nav>
       <div class="hero__content">
         <p class="eyebrow">Générateur</p>
-        <h1>Proportions et pourcentages</h1>
+        <h1>Proportions et évolutions</h1>
         <p>
-          Renforce tes réflexes sur les ratios, les parts de population et les
-          coefficients multiplicateurs dans les situations concrètes.
+          Retrouve l’immersion de la page d’accueil pour travailler les
+          pourcentages, coefficients multiplicateurs et remises successives à
+          raison d’une question à la fois.
         </p>
-        <a class="btn" href="#entrainement">Lancer un QCM</a>
+        <div class="hero__cta">
+          <a class="btn" href="#entrainement">Lancer une série</a>
+          <a class="btn btn--ghost" href="index.html">← Retour à l'accueil</a>
+        </div>
       </div>
     </header>
 
     <main>
       <section class="section intro">
         <div>
-          <h2>Compétences ciblées</h2>
+          <h2>Compétences mobilisées</h2>
           <p>
-            Modéliser une proportion, passer d'un pourcentage à un coefficient et
-            interpréter des données issues d'études statistiques.
+            Convertis une proportion sous toutes ses écritures, calcule des
+            parts connues ou inconnues et anticipe les évolutions successives.
           </p>
         </div>
         <ul>
-          <li>Travaille les variations successives et les remises.</li>
-          <li>Visualise les étapes de calcul dans les corrections.</li>
-          <li>Compare plusieurs méthodes (tableau de proportionnalité, fraction, etc.).</li>
+          <li>Questions tirées au hasard et présentées une par une.</li>
+          <li>
+            Explications détaillées pour comprendre les erreurs et consolider les
+            réflexes.
+          </li>
+          <li>Boutons « Nouvelle question », « Valider » et « Afficher la solution ».</li>
         </ul>
       </section>
 
       <section class="module" id="entrainement">
         <div class="module__header">
           <p class="eyebrow">Session active</p>
-          <h2>Générateur de QCM proportions</h2>
-          <p>Réponds mentalement avant de valider pour simuler un exercice flash.</p>
+          <h2>Générateur proportions & évolutions</h2>
+          <p>Affiche une question à la fois, valide ton choix ou dévoile la solution.</p>
         </div>
-        <div class="qcm" data-category="proportions">
-          <p class="qcm__question"></p>
-          <div class="qcm__options"></div>
-          <div class="qcm__actions">
-            <button class="btn qcm__validate">Valider</button>
-            <button class="btn btn--ghost qcm__next">Nouvelle question</button>
+        <div class="generator">
+          <p class="generator__intro">
+            Chaque question propose quatre réponses possibles. Utilise « Nouvelle
+            question » pour relancer un tirage quand tu veux.
+          </p>
+          <div class="generator__actions" id="controls">
+            <button class="btn" type="button" id="newQuestion">Nouvelle question</button>
+            <button class="btn btn--ghost" type="button" id="checkQuestion">Valider</button>
+            <button class="btn btn--ghost" type="button" id="showSolution">
+              Afficher la solution
+            </button>
           </div>
-          <p class="qcm__feedback" aria-live="polite"></p>
+          <div id="quiz" class="generator__questions"></div>
+          <div id="result" class="generator__result" aria-live="polite"></div>
         </div>
       </section>
     </main>
@@ -79,5 +105,6 @@
     </footer>
 
     <script src="scripts.js"></script>
+    <script src="proportions-generator.js"></script>
   </body>
 </html>
