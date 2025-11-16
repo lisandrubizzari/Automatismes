@@ -17,6 +17,15 @@ export function shuffle(array) {
   return clone;
 }
 
+export function formatSigned(value, { showPlus = true } = {}) {
+  const sign = value >= 0 ? '+' : '-';
+  const absoluteValue = Math.abs(value);
+  if (!showPlus && value >= 0) {
+    return `${absoluteValue}`;
+  }
+  return `${sign} ${absoluteValue}`;
+}
+
 export function formatDuration(totalSeconds) {
   const safeValue = Math.max(0, Number.isFinite(totalSeconds) ? totalSeconds : 0);
   const minutes = Math.floor(safeValue / 60)

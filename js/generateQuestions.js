@@ -1,4 +1,4 @@
-import { randInt, shuffle, buildChoiceSet } from './utils.js';
+import { randInt, shuffle, buildChoiceSet, formatSigned } from './utils.js';
 
 const DECIMALS = { minimumFractionDigits: 0, maximumFractionDigits: 2 };
 
@@ -8,6 +8,16 @@ function simplifyFraction(num, den) {
   const gcd = (a, b) => (b === 0 ? Math.abs(a) : gcd(b, a % b));
   const divisor = gcd(num, den);
   return { numerator: num / divisor, denominator: den / divisor };
+}
+
+function binomialCoefficient(n, k) {
+  let numerator = 1;
+  let denominator = 1;
+  for (let i = 1; i <= k; i += 1) {
+    numerator *= n - (i - 1);
+    denominator *= i;
+  }
+  return numerator / denominator;
 }
 
 function randomItem(list) {
@@ -291,6 +301,25 @@ function genRationalEquation() {
   };
 }
 
+function genDevelopIdentity() {
+  const a = randInt(2, 6);
+  const identity = randomItem([
+    { expr: `(x + ${a})²`, expanded: `x² + ${2 * a}x + ${a * a}` },
+    { expr: `(x - ${a})²`, expanded: `x² - ${2 * a}x + ${a * a}` },
+    { expr: `(x + ${a})(x - ${a})`, expanded: `x² - ${a * a}` },
+  ]);
+  const wrongs = [
+    `x² + ${a}x + ${a * a}`,
+    `x² - ${a * a}`,
+    `x² + ${2 * a}x - ${a * a}`,
+  ].filter((value) => value !== identity.expanded);
+  return {
+    statement: `Développer ${identity.expr}.`,
+    ...buildChoiceSet(identity.expanded, wrongs),
+    explanation: `Identité remarquable appliquée : ${identity.expr} = ${identity.expanded}.`,
+  };
+}
+
 const calculQuestions = [
   genLinearEquation,
   genFractionSum,
@@ -308,6 +337,7 @@ const calculQuestions = [
   genFormulaApplication,
   genSquareEquation,
   genRationalEquation,
+  genDevelopIdentity,
 ];
 
 function genPercentOfValue() {
@@ -544,6 +574,21 @@ function genInitialAfterDecrease() {
   };
 }
 
+function genIndiceBase() {
+  const baseYear = randInt(2018, 2022);
+  const baseValue = randInt(80, 140);
+  const rate = randInt(-15, 30);
+  const currentYear = baseYear + randInt(1, 3);
+  const currentValue = Math.round(baseValue * (1 + rate / 100));
+  const index = Math.round((currentValue / baseValue) * 100);
+  const wrongs = [`${100 + rate}`, `${currentValue}`, `${Math.round((baseValue / currentValue) * 100)}`];
+  return {
+    statement: `En ${baseYear}, une production vaut ${baseValue}. En ${currentYear}, elle vaut ${currentValue}. Quel est l'indice base 100 en ${currentYear} (base ${baseYear}) ?`,
+    ...buildChoiceSet(`${index}`, wrongs.map((value) => `${value}`)),
+    explanation: `Indice = (valeur année / valeur base) × 100 = (${currentValue}/${baseValue}) × 100 = ${index}.`,
+  };
+}
+
 const evolutionQuestions = [
   genAdditiveToMultiplicative,
   genFinalValue,
@@ -554,6 +599,7 @@ const evolutionQuestions = [
   genMultipleVariations,
   genValueAfterMixedVariations,
   genInitialAfterDecrease,
+  genIndiceBase,
 ];
 
 function genEvaluateLinearFunction() {
@@ -597,6 +643,37 @@ function genFunctionVariation() {
   };
 }
 
+function genVariationTableReading() {
+  const left = randInt(-4, -1);
+  const pivot = randInt(0, 2);
+  const right = pivot + randInt(2, 4);
+  const statement = `Une fonction f est croissante sur [${left} ; ${pivot}] puis décroissante sur [${pivot} ; ${right}]. Que peut-on affirmer ?`;
+  const correct = `f admet un maximum en x = ${pivot}.`;
+  const wrongs = ['f est décroissante partout.', `f admet un minimum en x = ${pivot}.`, `f est croissante sur [${pivot} ; ${right}].`];
+  return {
+    statement,
+    ...buildChoiceSet(correct, wrongs),
+    explanation: `Croissante puis décroissante ⇒ ${pivot} est un point où f change de sens et atteint un maximum.`,
+  };
+}
+
+function genDerivativeSignInterpretation() {
+  const pivot = randInt(-1, 3);
+  const intervalLength = randInt(2, 4);
+  const leftBound = pivot - intervalLength;
+  const rightBound = pivot + intervalLength;
+  const statement = `On sait que f'(x) > 0 pour x ∈ (${leftBound} ; ${pivot}) et f'(x) < 0 pour x ∈ (${pivot} ; ${rightBound}). Quelle conclusion ?`;
+  const correct = `f atteint un maximum en x = ${pivot}.`;
+  const wrongs = ['f est minimale en x = ${pivot}.', 'f est croissante sur tout ℝ.', 'f est décroissante avant et après ${pivot}.'].map((text) =>
+    text.replace('${pivot}', `${pivot}`),
+  );
+  return {
+    statement,
+    ...buildChoiceSet(correct, wrongs),
+    explanation: `Signe de f' : positif puis négatif ⇒ f est croissante puis décroissante, donc maximum en ${pivot}.`,
+  };
+}
+
 function genImagePreimage() {
   const a = randInt(1, 5);
   const b = randInt(-5, 5);
@@ -632,8 +709,8 @@ function genSignFromFactorized() {
   const a = randInt(-4, 4) || -2;
   const b = randInt(1, 6);
   const c = randInt(-6, -1);
-  const statement = `Déterminer le signe de f(x) = ${a}(x - ${b})(x - ${c}).`;
-  const correct = `Signe de ${a > 0 ? 'l'intérieur' : 'l'extérieur'} de [${Math.min(b, c)} ; ${Math.max(b, c)}]`;
+  const statement = `Déterminer le signe de f(x) = ${a}(x ${formatSigned(-b)})(x ${formatSigned(-c)}).`;
+  const correct = `Signe de ${a > 0 ? "l'intérieur" : "l'extérieur"} de [${Math.min(b, c)} ; ${Math.max(b, c)}]`;
   const wrongs = ['Toujours positif', 'Toujours négatif', 'Change uniquement en x = 0'];
   return {
     statement,
@@ -660,7 +737,7 @@ function genGraphSolveZero() {
   const slope = randInt(1, 4);
   const intercept = randInt(-5, -1);
   const root = -intercept / slope;
-  const description = 'D'après le graphique, pour quelle valeur de x a-t-on f(x) = 0 ?';
+  const description = "D'après le graphique, pour quelle valeur de x a-t-on f(x) = 0 ?";
   return {
     statement: description,
     statementHTML: `${description}<br/>${createLineGraph(slope, intercept)}`,
@@ -687,6 +764,8 @@ const functionQuestions = [
   genEvaluateLinearFunction,
   genSlopeFromTable,
   genFunctionVariation,
+  genVariationTableReading,
+  genDerivativeSignInterpretation,
   genImagePreimage,
   genRecognizeFunction,
   genSignFromFactorized,
@@ -899,6 +978,23 @@ function genNotationQuestion() {
   };
 }
 
+function genBinomialProbability() {
+  const n = randInt(3, 6);
+  const k = randInt(1, n - 1);
+  const p = randInt(2, 8) / 10;
+  const probability = (binomialCoefficient(n, k) * p ** k * (1 - p) ** (n - k)).toFixed(3);
+  const wrongs = [
+    p.toFixed(3),
+    (p ** k).toFixed(3),
+    ((1 - p) ** (n - k)).toFixed(3),
+  ];
+  return {
+    statement: `Soit X ~ B(${n} ; ${p.toFixed(1)}). Calculer P(X = ${k}).`,
+    ...buildChoiceSet(probability, wrongs),
+    explanation: `P(X = ${k}) = C(${n}, ${k}) × ${p.toFixed(1)}^${k} × (1 - ${p.toFixed(1)})^${n - k} = ${probability}.`,
+  };
+}
+
 const probabilityQuestions = [
   genBagProbability,
   genComplementaryEvent,
@@ -908,6 +1004,7 @@ const probabilityQuestions = [
   genSumEvent,
   genConditionalFromTree,
   genNotationQuestion,
+  genBinomialProbability,
 ];
 
 const questionBanks = {

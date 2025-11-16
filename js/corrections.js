@@ -14,9 +14,13 @@ export function evaluateResponses(questions, responses) {
 }
 
 export function applyCorrections(view, questions, evaluation) {
+  let firstUnanswered = null;
   evaluation.forEach((detail, index) => {
     if (!detail.isAnswered) {
       view.markQuestion(index, 'info', 'Choisis une réponse.');
+      if (firstUnanswered === null) {
+        firstUnanswered = index;
+      }
       return;
     }
     if (detail.isCorrect) {
@@ -29,6 +33,9 @@ export function applyCorrections(view, questions, evaluation) {
       );
     }
   });
+  if (firstUnanswered !== null && typeof view.scrollToQuestion === 'function') {
+    view.scrollToQuestion(firstUnanswered);
+  }
 }
 
 export function revealAllAnswers(view, questions) {
