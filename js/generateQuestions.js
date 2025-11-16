@@ -633,7 +633,7 @@ function genSignFromFactorized() {
   const b = randInt(1, 6);
   const c = randInt(-6, -1);
   const statement = `Déterminer le signe de f(x) = ${a}(x - ${b})(x - ${c}).`;
-  const correct = `Signe de ${a > 0 ? "l'intérieur" : "l'extérieur"} de [${Math.min(b, c)} ; ${Math.max(b, c)}]`;
+  const correct = `Signe de ${a > 0 ? 'l'intérieur' : 'l'extérieur'} de [${Math.min(b, c)} ; ${Math.max(b, c)}]`;
   const wrongs = ['Toujours positif', 'Toujours négatif', 'Change uniquement en x = 0'];
   return {
     statement,
@@ -660,7 +660,7 @@ function genGraphSolveZero() {
   const slope = randInt(1, 4);
   const intercept = randInt(-5, -1);
   const root = -intercept / slope;
-  const description = "D'après le graphique, pour quelle valeur de x a-t-on f(x) = 0 ?";
+  const description = 'D'après le graphique, pour quelle valeur de x a-t-on f(x) = 0 ?';
   return {
     statement: description,
     statementHTML: `${description}<br/>${createLineGraph(slope, intercept)}`,
