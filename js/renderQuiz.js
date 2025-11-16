@@ -1,3 +1,49 @@
+const ALLOWED_TAGS = new Set(['br', 'span', 'strong', 'em', 'svg', 'line', 'path', 'g', 'rect', 'circle', 'title']);
+const ALLOWED_ATTRS = {
+  span: ['class'],
+  strong: ['class'],
+  em: ['class'],
+  svg: ['class', 'viewBox', 'role', 'aria-label'],
+  line: ['x1', 'x2', 'y1', 'y2', 'stroke', 'stroke-width'],
+  path: ['d', 'stroke', 'stroke-width', 'fill'],
+  g: ['stroke', 'stroke-width', 'fill'],
+  rect: ['x', 'y', 'width', 'height', 'stroke', 'stroke-width', 'fill'],
+  circle: ['cx', 'cy', 'r', 'stroke', 'stroke-width', 'fill'],
+  title: [],
+};
+
+function sanitizeNode(node) {
+  if (node.nodeType === Node.TEXT_NODE) {
+    return document.createTextNode(node.textContent || '');
+  }
+  if (node.nodeType === Node.ELEMENT_NODE) {
+    const tagName = node.tagName.toLowerCase();
+    const allowedAttrs = ALLOWED_ATTRS[tagName] || [];
+    const safeElement = document.createElement(tagName);
+    if (!ALLOWED_TAGS.has(tagName)) {
+      const fragment = document.createDocumentFragment();
+      node.childNodes.forEach((child) => fragment.appendChild(sanitizeNode(child)));
+      return fragment;
+    }
+    [...node.attributes].forEach((attr) => {
+      if (allowedAttrs.includes(attr.name)) {
+        safeElement.setAttribute(attr.name, attr.value);
+      }
+    });
+    node.childNodes.forEach((child) => safeElement.appendChild(sanitizeNode(child)));
+    return safeElement;
+  }
+  return document.createDocumentFragment();
+}
+
+function createSafeFragment(html) {
+  const parser = new DOMParser();
+  const doc = parser.parseFromString(`<body>${html}</body>`, 'text/html');
+  const fragment = document.createDocumentFragment();
+  doc.body.childNodes.forEach((child) => fragment.appendChild(sanitizeNode(child)));
+  return fragment;
+}
+
 export function createQuizRenderer({ container, progressFill, progressTrack, progressLabel }) {
   let questions = [];
   let responses = [];
@@ -39,9 +85,11 @@ export function createQuizRenderer({ container, progressFill, progressTrack, pro
 
       const statement = document.createElement('p');
       statement.className = 'question-card__statement';
+      statement.id = `question-${index}-statement`;
       const prefix = `Question ${index + 1}. `;
       if (question.statementHTML) {
-        statement.innerHTML = `${prefix}${question.statementHTML}`;
+        statement.textContent = prefix;
+        statement.appendChild(createSafeFragment(question.statementHTML));
       } else {
         statement.textContent = `${prefix}${question.statement}`;
       }
@@ -49,6 +97,8 @@ export function createQuizRenderer({ container, progressFill, progressTrack, pro
 
       const choicesWrapper = document.createElement('div');
       choicesWrapper.className = 'question-card__choices';
+      choicesWrapper.setAttribute('role', 'radiogroup');
+      choicesWrapper.setAttribute('aria-labelledby', statement.id);
 
       question.choices.forEach((choice, choiceIndex) => {
         const label = document.createElement('label');
@@ -96,15 +146,18 @@ export function createQuizRenderer({ container, progressFill, progressTrack, pro
     if (!node) {
       return;
     }
-    node.classList.remove('is-correct', 'is-incorrect');
+    node.classList.remove('is-correct', 'is-incorrect', 'is-info');
     if (status === 'correct') {
       node.classList.add('is-correct');
     } else if (status === 'incorrect') {
       node.classList.add('is-incorrect');
+    } else if (status === 'info') {
+      node.classList.add('is-info');
     }
     const feedback = node.querySelector('.question-card__feedback');
     if (feedback) {
-      feedback.innerHTML = message;
+      feedback.innerHTML = '';
+      feedback.appendChild(createSafeFragment(message));
     }
   }
 
@@ -116,12 +169,23 @@ export function createQuizRenderer({ container, progressFill, progressTrack, pro
     );
   }
 
+  function scrollToQuestion(index) {
+    const node = nodes[index];
+    if (!node) {
+      return;
+    }
+    node.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    node.classList.add('is-highlighted');
+    setTimeout(() => node.classList.remove('is-highlighted'), 1200);
+  }
+
   return {
     render,
     getResponses,
     markQuestion,
     revealAnswer,
     updateProgress,
+    scrollToQuestion,
     get questions() {
       return [...questions];
     },

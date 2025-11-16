@@ -71,6 +71,9 @@ function initQuizPage() {
 
   function updateModeBadge() {
     modeBadge.textContent = isTimedMode ? 'Activé' : 'Inactif';
+    if (timedModeToggle) {
+      timedModeToggle.setAttribute('aria-checked', isTimedMode ? 'true' : 'false');
+    }
   }
 
   function updateCountdownDisplay() {
@@ -93,7 +96,15 @@ function initQuizPage() {
       updateCountdownDisplay();
       if (remainingSeconds <= 0) {
         stopCountdown();
-        runCorrection();
+        if (motivationalMessage) {
+          motivationalMessage.textContent = 'Temps écoulé ! La correction démarre automatiquement.';
+        }
+        if (scoreDisplay) {
+          scoreDisplay.textContent = 'Correction en cours…';
+        }
+        setTimeout(() => {
+          runCorrection();
+        }, 800);
       }
     }, 1000);
   }
@@ -114,7 +125,10 @@ function initQuizPage() {
 
   function updateScoreDisplay(score, total) {
     scoreDisplay.textContent = `${score} / ${total}`;
-    motivationalMessage.textContent = motivationFromScore(score, total);
+    const duration = elapsedTimeDisplay ? elapsedTimeDisplay.textContent : '—';
+    const modeLabel = isTimedMode ? 'mode chronométré' : 'mode libre';
+    const tone = motivationFromScore(score, total);
+    motivationalMessage.textContent = `Résultat : ${score}/${total} en ${modeLabel} (temps : ${duration}). ${tone}`;
     lastScore = score;
   }
 
@@ -201,6 +215,7 @@ function initQuizPage() {
         updateCountdownDisplay();
       }
     });
+    timedModeToggle.setAttribute('aria-checked', 'false');
   } else {
     console.warn('[quiz-page] Interrupteur #timedMode introuvable.');
   }
