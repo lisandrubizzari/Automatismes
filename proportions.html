@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Proportions et pourcentages · Automatismes Première</title>
+    <link rel="stylesheet" href="styles.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <header class="hero hero--compact" id="top">
+      <nav class="nav">
+        <a class="logo" href="index.html">Automatismes</a>
+        <ul class="nav__list">
+          <li><a href="calcul.html">Calcul numérique</a></li>
+          <li><a href="proportions.html">Proportions</a></li>
+          <li><a href="evolutions.html">Évolutions</a></li>
+          <li><a href="fonctions.html">Fonctions</a></li>
+          <li><a href="statistiques.html">Statistiques</a></li>
+          <li><a href="probabilites.html">Probabilités</a></li>
+        </ul>
+      </nav>
+      <div class="hero__content">
+        <p class="eyebrow">Générateur</p>
+        <h1>Proportions et pourcentages</h1>
+        <p>
+          Renforce tes réflexes sur les ratios, les parts de population et les
+          coefficients multiplicateurs dans les situations concrètes.
+        </p>
+        <a class="btn" href="#entrainement">Lancer un QCM</a>
+      </div>
+    </header>
+
+    <main>
+      <section class="section intro">
+        <div>
+          <h2>Compétences ciblées</h2>
+          <p>
+            Modéliser une proportion, passer d'un pourcentage à un coefficient et
+            interpréter des données issues d'études statistiques.
+          </p>
+        </div>
+        <ul>
+          <li>Travaille les variations successives et les remises.</li>
+          <li>Visualise les étapes de calcul dans les corrections.</li>
+          <li>Compare plusieurs méthodes (tableau de proportionnalité, fraction, etc.).</li>
+        </ul>
+      </section>
+
+      <section class="module" id="entrainement">
+        <div class="module__header">
+          <p class="eyebrow">Session active</p>
+          <h2>Générateur de QCM proportions</h2>
+          <p>Réponds mentalement avant de valider pour simuler un exercice flash.</p>
+        </div>
+        <div class="qcm" data-category="proportions">
+          <p class="qcm__question"></p>
+          <div class="qcm__options"></div>
+          <div class="qcm__actions">
+            <button class="btn qcm__validate">Valider</button>
+            <button class="btn btn--ghost qcm__next">Nouvelle question</button>
+          </div>
+          <p class="qcm__feedback" aria-live="polite"></p>
+        </div>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <p>
+        &copy; <span id="year"></span> Automatisation des calculs — Prépare ton
+        Bac sereinement.
+      </p>
+      <a href="#top">Retour en haut</a>
+    </footer>
+
+    <script src="scripts.js"></script>
+  </body>
+</html>

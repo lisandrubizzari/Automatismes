@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Probabilités · Automatismes Première</title>
+    <link rel="stylesheet" href="styles.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <header class="hero hero--compact" id="top">
+      <nav class="nav">
+        <a class="logo" href="index.html">Automatismes</a>
+        <ul class="nav__list">
+          <li><a href="calcul.html">Calcul numérique</a></li>
+          <li><a href="proportions.html">Proportions</a></li>
+          <li><a href="evolutions.html">Évolutions</a></li>
+          <li><a href="fonctions.html">Fonctions</a></li>
+          <li><a href="statistiques.html">Statistiques</a></li>
+          <li><a href="probabilites.html">Probabilités</a></li>
+        </ul>
+      </nav>
+      <div class="hero__content">
+        <p class="eyebrow">Générateur</p>
+        <h1>Probabilités</h1>
+        <p>
+          Entraîne-toi sur les expériences à étapes, l'indépendance et la loi
+          binomiale pour répondre du tac au tac.
+        </p>
+        <a class="btn" href="#entrainement">Lancer un QCM</a>
+      </div>
+    </header>
+
+    <main>
+      <section class="section intro">
+        <div>
+          <h2>Compétences ciblées</h2>
+          <p>
+            Construire un arbre pondéré, transformer une probabilité en pourcentage
+            et vérifier les hypothèses d'indépendance.
+          </p>
+        </div>
+        <ul>
+          <li>Rappels sur les notations : P(A ∩ B), P(A ∪ B).</li>
+          <li>Cas pratiques d'urnes et de tirages successifs.</li>
+          <li>Lien avec la loi binomiale et son paramètre.</li>
+        </ul>
+      </section>
+
+      <section class="module" id="entrainement">
+        <div class="module__header">
+          <p class="eyebrow">Session active</p>
+          <h2>Générateur de QCM probabilités</h2>
+          <p>Résous chaque situation en t'appuyant sur les règles de probabilité.</p>
+        </div>
+        <div class="qcm" data-category="probabilites">
+          <p class="qcm__question"></p>
+          <div class="qcm__options"></div>
+          <div class="qcm__actions">
+            <button class="btn qcm__validate">Valider</button>
+            <button class="btn btn--ghost qcm__next">Nouvelle question</button>
+          </div>
+          <p class="qcm__feedback" aria-live="polite"></p>
+        </div>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <p>
+        &copy; <span id="year"></span> Automatisation des calculs — Prépare ton
+        Bac sereinement.
+      </p>
+      <a href="#top">Retour en haut</a>
+    </footer>
+
+    <script src="scripts.js"></script>
+  </body>
+</html>

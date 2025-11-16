@@ -1,0 +1,608 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>QCM Automatismes – Calcul numérique et algébrique</title>
+    <style>
+        body {
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+            max-width: 900px;
+            margin: 20px auto;
+            padding: 0 15px 40px;
+            background: #f5f5f5;
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 0.2em;
+        }
+
+        h2 {
+            margin-top: 0;
+            text-align: center;
+            font-size: 1rem;
+            font-weight: normal;
+            color: #555;
+        }
+
+        #controls {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: center;
+            margin: 15px 0 20px;
+        }
+
+        button {
+            border: none;
+            padding: 8px 14px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.95rem;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+        }
+
+        button#newSet {
+            background: #007bff;
+            color: white;
+        }
+
+        button#correct {
+            background: #28a745;
+            color: white;
+        }
+
+        button#showAnswers {
+            background: #6c757d;
+            color: white;
+        }
+
+        #quiz {
+            margin-top: 10px;
+        }
+
+        .question {
+            background: white;
+            border-radius: 8px;
+            padding: 10px 12px;
+            margin-bottom: 10px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        .statement {
+            font-weight: 600;
+            margin-bottom: 6px;
+        }
+
+        .choices label {
+            display: block;
+            margin: 2px 0;
+            cursor: pointer;
+        }
+
+        .choices input {
+            margin-right: 6px;
+        }
+
+        .feedback {
+            margin-top: 4px;
+            font-size: 0.9rem;
+        }
+
+        .correct {
+            border-left: 4px solid #28a745;
+            background: #e9f7ef;
+        }
+
+        .incorrect {
+            border-left: 4px solid #dc3545;
+            background: #fbe9eb;
+        }
+
+        #result {
+            margin-top: 15px;
+            font-weight: bold;
+            text-align: center;
+            font-size: 1.05rem;
+        }
+
+        .answer-text {
+            font-style: italic;
+        }
+    </style>
+</head>
+<body>
+
+<h1>QCM – Automatismes</h1>
+<h2>Calcul numérique et algébrique (Première spécialité)</h2>
+
+<div id="controls">
+    <button id="newSet">Nouvelle série</button>
+    <button id="correct">Corriger</button>
+    <button id="showAnswers">Afficher toutes les réponses</button>
+</div>
+
+<div id="quiz"></div>
+<div id="result"></div>
+
+<script>
+/* ===================== OUTILS GÉNÉRAUX ===================== */
+
+const NB_QUESTIONS = 10;
+let quizData = [];
+
+const quizElement = document.getElementById("quiz");
+const resultElement = document.getElementById("result");
+const newSetButton = document.getElementById("newSet");
+const correctButton = document.getElementById("correct");
+const showAnswersButton = document.getElementById("showAnswers");
+
+/** entier aléatoire entre min et max (inclus) */
+function randInt(min, max) {
+    return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+
+/** Mélange un tableau (Fisher-Yates) */
+function shuffle(array) {
+    for (let i = array.length - 1; i > 0; i--) {
+        const j = randInt(0, i);
+        [array[i], array[j]] = [array[j], array[i]];
+    }
+}
+
+/** PGCD pour simplifier les fractions */
+function gcd(a, b) {
+    a = Math.abs(a);
+    b = Math.abs(b);
+    while (b !== 0) {
+        const t = b;
+        b = a % b;
+        a = t;
+    }
+    return a;
+}
+
+/** écriture d'une fraction simplifiée en chaîne "num/den" (den>0) */
+function fractionString(num, den) {
+    const g = gcd(num, den);
+    num /= g;
+    den /= g;
+    if (den < 0) {
+        den = -den;
+        num = -num;
+    }
+    if (den === 1) return String(num);
+    return num + "/" + den;
+}
+
+/** écriture a^n avec <sup>, n entier */
+function powString(base, exp) {
+    if (exp === 1) return String(base);
+    return base + "<sup>" + exp + "</sup>";
+}
+
+function formatLinear(coef, constant) {
+    let partX = "";
+    if (coef === 0) {
+        partX = "";
+    } else if (coef === 1) {
+        partX = "x";
+    } else if (coef === -1) {
+        partX = "-x";
+    } else {
+        partX = coef + "x";
+    }
+
+    if (constant === 0) {
+        return partX || "0";
+    }
+    if (!partX) {
+        return String(constant);
+    }
+    const sign = constant > 0 ? " + " : " - ";
+    const absConst = Math.abs(constant);
+    return partX + sign + absConst;
+}
+
+/* ===================== GÉNÉRATEURS DE QUESTIONS ===================== */
+
+/* 1) Comparer deux nombres (entiers) */
+function genCompareNumbers() {
+    let a = randInt(-20, 20);
+    let b;
+    do {
+        b = randInt(-20, 20);
+    } while (b === a);
+
+    let correctRel;
+    if (a < b) correctRel = "a < b";
+    else if (a > b) correctRel = "a > b";
+    else correctRel = "a = b";
+
+    const choices = [
+        "a < b",
+        "a > b",
+        "a = b",
+        "On ne peut pas savoir"
+    ];
+    const correctIndex = choices.indexOf(correctRel);
+
+    return {
+        statement: `On considère deux nombres : a = ${a} et b = ${b}. Comparer a et b.`,
+        choices,
+        correctIndex,
+        explanation: `Ici a = ${a} et b = ${b}, donc ${correctRel}.`
+    };
+}
+
+/* 2) Opérations sur les fractions (addition) */
+function genFractions() {
+    const q = randInt(2, 9);
+    const s = randInt(2, 9);
+    const p = randInt(1, q - 1);
+    const r = randInt(1, s - 1);
+
+    const num = p * s + r * q;
+    const den = q * s;
+    const correctFrac = fractionString(num, den);
+
+    const wrong1 = fractionString(p + r, q + s);
+    const wrong2 = `${num}/${den}`;
+    const wrong3 = fractionString(num - q, den);
+
+    let rawChoices = [correctFrac, wrong1, wrong2, wrong3];
+    rawChoices = [...new Set(rawChoices)];
+    while (rawChoices.length < 4) {
+        rawChoices.push(fractionString(num + randInt(-3, 3), den));
+        rawChoices = [...new Set(rawChoices)];
+    }
+    shuffle(rawChoices);
+    const correctIndex = rawChoices.indexOf(correctFrac);
+
+    return {
+        statement: `Calculer : ${p}/${q} + ${r}/${s}.`,
+        choices: rawChoices,
+        correctIndex,
+        explanation: `On met au même dénominateur : ${p}/${q} + ${r}/${s} = (${p}×${s} + ${r}×${q})/(${q}×${s}) = ${num}/${den} = ${correctFrac}.`
+    };
+}
+
+/* 3) Opérations sur les puissances */
+function genPowers() {
+    const base = randInt(2, 7);
+    const m = randInt(-2, 3);
+    const n = randInt(-2, 3);
+    const exp = m + n;
+
+    const correct = powString(base, exp);
+    const c1 = powString(base, m * n);
+    const c2 = powString(base, m - n);
+    const c3 = powString(base, n - m);
+
+    let choices = [correct, c1, c2, c3];
+    choices = [...new Set(choices)];
+    while (choices.length < 4) {
+        choices.push(powString(base, exp + randInt(-3, 3)));
+        choices = [...new Set(choices)];
+    }
+    shuffle(choices);
+    const correctIndex = choices.indexOf(correct);
+
+    return {
+        statement: `Simplifier : ${powString(base, m)} × ${powString(base, n)}.`,
+        choices,
+        correctIndex,
+        explanation: `On utilise a<sup>m</sup> × a<sup>n</sup> = a<sup>m+n</sup>, donc ${powString(base, m)} × ${powString(base, n)} = ${correct}.`
+    };
+}
+
+/* 4) Passage pourcentage / écriture décimale */
+function genPercentConversion() {
+    const percArr = [5, 10, 12, 20, 25, 30, 40, 50];
+    const p = percArr[randInt(0, percArr.length - 1)];
+
+    const correctDec = p / 100;
+    const correct = String(correctDec).replace(".", ",");
+
+    const w1 = String(p / 10).replace(".", ",");
+    const w2 = String(p).replace(".", ",");
+    const w3 = String((p / 1000).toFixed(3)).replace(".", ",");
+
+    let choices = [correct, w1, w2, w3];
+    choices = [...new Set(choices)];
+    shuffle(choices);
+    const correctIndex = choices.indexOf(correct);
+
+    return {
+        statement: `Écrire ${p} % sous forme décimale.`,
+        choices,
+        correctIndex,
+        explanation: `${p} % = ${p}/100 = ${correctDec}.`
+    };
+}
+
+/* 5) Ordre de grandeur (produit simple) */
+function genOrderMagnitude() {
+    const a = randInt(30, 80);
+    const b = randInt(2, 9);
+    const exact = a * b;
+
+    const approx1 = Math.round(exact / 10) * 10;
+    const approx2 = Math.round(exact / 100) * 100;
+    const approx3 = approx1 + 50;
+
+    const correct = `${approx2}`;
+    let choices = [correct, `${exact}`, `${approx1}`, `${approx3}`];
+    choices = [...new Set(choices)];
+    shuffle(choices);
+    const correctIndex = choices.indexOf(correct);
+
+    return {
+        statement: `Donner un ordre de grandeur du produit ${a} × ${b}.`,
+        choices,
+        correctIndex,
+        explanation: `Le produit exact est ${exact}. Un ordre de grandeur raisonnable à la centaine près est ${correct}.`
+    };
+}
+
+/* 6) Calcul littéral élémentaire */
+function genLiteral() {
+    const a = randInt(1, 5);
+    const b = randInt(1, 7);
+    const c = randInt(1, 5);
+    const d = randInt(1, 7);
+
+    const coef = -a + c;
+    const constant = -b + d;
+    const correct = formatLinear(coef, constant);
+
+    const wrong1 = formatLinear(-a - c, -b - d);
+    const wrong2 = formatLinear(a + c, b + d);
+    const wrong3 = formatLinear(coef, -constant);
+
+    let choices = [correct, wrong1, wrong2, wrong3];
+    choices = [...new Set(choices)];
+    while (choices.length < 4) {
+        choices.push(formatLinear(coef + randInt(-2, 2), constant + randInt(-3, 3)));
+        choices = [...new Set(choices)];
+    }
+    shuffle(choices);
+    const correctIndex = choices.indexOf(correct);
+
+    return {
+        statement: `Développer et réduire : -( ${a}x + ${b} ) + (${c}x + ${d}).`,
+        choices,
+        correctIndex,
+        explanation: `On distribue le signe moins : -${a}x - ${b} + ${c}x + ${d} = ${correct}.`
+    };
+}
+
+/* 7) Développement simple */
+function genDistributive() {
+    const k = randInt(2, 9);
+    const m = randInt(1, 6);
+    const n = randInt(-6, 6);
+    const correct = formatLinear(k * m, k * n);
+
+    const wrong1 = formatLinear(m + n, k);
+    const wrong2 = formatLinear(k * m, n);
+    const wrong3 = formatLinear(m, k * n);
+
+    let choices = [correct, wrong1, wrong2, wrong3];
+    choices = [...new Set(choices)];
+    shuffle(choices);
+    const correctIndex = choices.indexOf(correct);
+
+    const formattedN = n >= 0 ? `+ ${n}` : `- ${Math.abs(n)}`;
+
+    return {
+        statement: `Développer : ${k}( ${m}x ${formattedN} ).`,
+        choices,
+        correctIndex,
+        explanation: `${k}×${m}x = ${k * m}x et ${k}×${n} = ${k * n}, donc ${correct}.`
+    };
+}
+
+/* 8) Résolution d'une équation linéaire */
+function genEquation() {
+    const a = randInt(2, 7);
+    const x = randInt(-5, 8);
+    const b = randInt(-9, 9);
+    const c = a * x + b;
+
+    const correct = `${x}`;
+    const wrong1 = `${x + randInt(-3, -1)}`;
+    const wrong2 = `${x + randInt(1, 3)}`;
+    const wrong3 = `${-x}`;
+
+    let choices = [correct, wrong1, wrong2, wrong3];
+    choices = [...new Set(choices)];
+    while (choices.length < 4) {
+        choices.push(`${x + randInt(-5, 5)}`);
+        choices = [...new Set(choices)];
+    }
+    shuffle(choices);
+    const correctIndex = choices.indexOf(correct);
+
+    const formattedB = b >= 0 ? `+ ${b}` : `- ${Math.abs(b)}`;
+
+    return {
+        statement: `Résoudre : ${a}x ${formattedB} = ${c}.`,
+        choices,
+        correctIndex,
+        explanation: `On transpose : ${a}x = ${c - b}, donc x = (${c - b})/${a} = ${x}.`
+    };
+}
+
+/* 9) Identité remarquable */
+function genIdentity() {
+    const a = randInt(1, 6);
+    const b = randInt(1, 6);
+    const correct = `${a * a}x<sup>2</sup> ${2 * a * b >= 0 ? "+" : "-"} ${Math.abs(2 * a * b)}x + ${b * b}`;
+
+    const wrong1 = `${a * a}x<sup>2</sup> + ${b * b}`;
+    const wrong2 = `${a * a}x<sup>2</sup> ${2 * a * b >= 0 ? "+" : "-"} ${Math.abs(2 * a * b)}x - ${b * b}`;
+    const wrong3 = `${a * a}x<sup>2</sup> ${2 * a * b >= 0 ? "+" : "-"} ${Math.abs(2 * a * b)}x + ${2 * b}`;
+
+    let choices = [correct, wrong1, wrong2, wrong3];
+    choices = [...new Set(choices)];
+    shuffle(choices);
+    const correctIndex = choices.indexOf(correct);
+
+    return {
+        statement: `Développer : (${a}x ${b >= 0 ? "+" : "-"} ${Math.abs(b)})<sup>2</sup>.`,
+        choices,
+        correctIndex,
+        explanation: `On applique (u+v)<sup>2</sup> = u<sup>2</sup> + 2uv + v<sup>2</sup>.`
+    };
+}
+
+/* 10) Factorisation par mise en évidence */
+function genFactorisation() {
+    const k = randInt(2, 9);
+    const m = randInt(1, 7);
+    const n = randInt(1, 7);
+
+    const correct = `${k}( ${m}x ${n >= 0 ? "+" : "-"} ${Math.abs(n)} )`;
+    const wrong1 = `${k + m}x ${n >= 0 ? "+" : "-"} ${Math.abs(n)}`;
+    const wrong2 = `${k}( ${m + n}x + ${n} )`;
+    const wrong3 = `${k}( ${m}x ${n >= 0 ? "+" : "-"} ${Math.abs(n * k)} )`;
+
+    let choices = [correct, wrong1, wrong2, wrong3];
+    choices = [...new Set(choices)];
+    shuffle(choices);
+    const correctIndex = choices.indexOf(correct);
+
+    return {
+        statement: `Factoriser : ${k * m}x ${k * n >= 0 ? "+" : "-"} ${Math.abs(k * n)}.`,
+        choices,
+        correctIndex,
+        explanation: `On met ${k} en facteur commun : ${k * m}x + ${k * n} = ${k}( ${m}x + ${n} ).`
+    };
+}
+
+const generators = [
+    genCompareNumbers,
+    genFractions,
+    genPowers,
+    genPercentConversion,
+    genOrderMagnitude,
+    genLiteral,
+    genDistributive,
+    genEquation,
+    genIdentity,
+    genFactorisation
+];
+
+/* ===================== LOGIQUE DU QCM ===================== */
+
+function generateQuiz() {
+    quizData = [];
+    const genPool = [...generators];
+    while (quizData.length < NB_QUESTIONS) {
+        if (genPool.length === 0) {
+            genPool.push(...generators);
+        }
+        const genIndex = randInt(0, genPool.length - 1);
+        const generator = genPool.splice(genIndex, 1)[0];
+        quizData.push(generator());
+    }
+}
+
+function renderQuiz() {
+    quizElement.innerHTML = "";
+    quizData.forEach((question, index) => {
+        const wrapper = document.createElement("div");
+        wrapper.className = "question";
+        wrapper.dataset.index = index;
+
+        const statement = document.createElement("p");
+        statement.className = "statement";
+        statement.innerHTML = `Question ${index + 1}. ${question.statement}`;
+        wrapper.appendChild(statement);
+
+        const choicesContainer = document.createElement("div");
+        choicesContainer.className = "choices";
+
+        question.choices.forEach((choice, choiceIndex) => {
+            const label = document.createElement("label");
+            const input = document.createElement("input");
+            input.type = "radio";
+            input.name = `q${index}`;
+            input.value = choiceIndex;
+            label.appendChild(input);
+            const span = document.createElement("span");
+            span.innerHTML = choice;
+            label.appendChild(span);
+            choicesContainer.appendChild(label);
+        });
+
+        wrapper.appendChild(choicesContainer);
+
+        const feedback = document.createElement("div");
+        feedback.className = "feedback";
+        wrapper.appendChild(feedback);
+
+        quizElement.appendChild(wrapper);
+    });
+    resultElement.textContent = "";
+}
+
+function correctQuiz() {
+    let score = 0;
+    quizData.forEach((question, index) => {
+        const questionElement = document.querySelector(`.question[data-index="${index}"]`);
+        const feedbackElement = questionElement.querySelector(".feedback");
+        const selected = questionElement.querySelector("input:checked");
+        questionElement.classList.remove("correct", "incorrect");
+
+        if (!selected) {
+            feedbackElement.textContent = "Choisis une réponse avant de corriger.";
+            return;
+        }
+
+        const answer = Number(selected.value);
+        if (answer === question.correctIndex) {
+            score++;
+            questionElement.classList.add("correct");
+            feedbackElement.innerHTML = `Bonne réponse ! ${question.explanation}`;
+        } else {
+            questionElement.classList.add("incorrect");
+            feedbackElement.innerHTML = `Réponse attendue : <span class="answer-text">${question.choices[question.correctIndex]}</span>. ${question.explanation}`;
+        }
+    });
+    resultElement.textContent = `Score : ${score} / ${quizData.length}`;
+}
+
+function showAllAnswers() {
+    quizData.forEach((question, index) => {
+        const questionElement = document.querySelector(`.question[data-index="${index}"]`);
+        const feedbackElement = questionElement.querySelector(".feedback");
+        questionElement.classList.remove("incorrect");
+        questionElement.classList.add("correct");
+        feedbackElement.innerHTML = `Réponse : <span class="answer-text">${question.choices[question.correctIndex]}</span>. ${question.explanation}`;
+    });
+    resultElement.textContent = "Réponses affichées pour toute la série.";
+}
+
+function initQuiz() {
+    generateQuiz();
+    renderQuiz();
+}
+
+newSetButton.addEventListener("click", () => {
+    initQuiz();
+});
+
+correctButton.addEventListener("click", () => {
+    correctQuiz();
+});
+
+showAnswersButton.addEventListener("click", () => {
+    showAllAnswers();
+});
+
+initQuiz();
+</script>
+</body>
+</html>
