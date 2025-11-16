@@ -129,6 +129,64 @@ function genCompareNumbers() {
   };
 }
 
+function genCompareViaComputation() {
+  const useDifference = Math.random() < 0.5;
+  if (useDifference) {
+    const a1 = randInt(20, 90) / 2;
+    const b1 = randInt(5, 40) / 2;
+    const a2 = randInt(10, 80) / 2;
+    const b2 = randInt(5, 35) / 2;
+    const valueLeft = a1 - b1;
+    const valueRight = a2 - b2;
+    const leftExpr = `${formatNumber(a1)} - ${formatNumber(b1)}`;
+    const rightExpr = `${formatNumber(a2)} - ${formatNumber(b2)}`;
+    const correct =
+      valueLeft > valueRight
+        ? `${leftExpr} > ${rightExpr}`
+        : valueLeft < valueRight
+        ? `${leftExpr} < ${rightExpr}`
+        : `${leftExpr} = ${rightExpr}`;
+    const wrongs = [
+      `${leftExpr} > ${rightExpr}`,
+      `${leftExpr} < ${rightExpr}`,
+      `${leftExpr} = ${rightExpr}`,
+    ].filter((choice) => choice !== correct);
+    return {
+      statement: 'Comparer les deux différences suivantes :',
+      ...buildChoiceSet(correct, wrongs),
+      explanation: `${leftExpr} = ${formatNumber(valueLeft)} et ${rightExpr} = ${formatNumber(
+        valueRight,
+      )} ⇒ ${correct}.`,
+    };
+  }
+  const numerator1 = randInt(8, 24);
+  const denominator1 = randInt(2, 8);
+  const numerator2 = randInt(8, 24);
+  const denominator2 = randInt(2, 8);
+  const valueLeft = numerator1 / denominator1;
+  const valueRight = numerator2 / denominator2;
+  const leftExpr = `${formatNumber(numerator1)} ÷ ${formatNumber(denominator1)}`;
+  const rightExpr = `${formatNumber(numerator2)} ÷ ${formatNumber(denominator2)}`;
+  const correct =
+    valueLeft > valueRight
+      ? `${leftExpr} > ${rightExpr}`
+      : valueLeft < valueRight
+      ? `${leftExpr} < ${rightExpr}`
+      : `${leftExpr} = ${rightExpr}`;
+  const wrongs = [
+    `${leftExpr} > ${rightExpr}`,
+    `${leftExpr} < ${rightExpr}`,
+    `${leftExpr} = ${rightExpr}`,
+  ].filter((choice) => choice !== correct);
+  return {
+    statement: 'Comparer les quotients (strictement positifs) ci-dessous :',
+    ...buildChoiceSet(correct, wrongs),
+    explanation: `${leftExpr} = ${formatNumber(valueLeft)} et ${rightExpr} = ${formatNumber(
+      valueRight,
+    )} ⇒ ${correct}.`,
+  };
+}
+
 function genDecimalFractionConversion() {
   const denominator = randomItem([4, 5, 8, 10, 20, 25]);
   const numerator = randInt(1, denominator - 1);
@@ -157,6 +215,66 @@ function genPercentToDecimal() {
   };
 }
 
+function genFractionOperations() {
+  const denominator1 = randInt(2, 9);
+  const denominator2 = randInt(2, 9);
+  const numerator1 = randInt(1, denominator1 - 1);
+  const numerator2 = randInt(1, denominator2 - 1);
+  const op = randomItem(['sub', 'mul', 'div', 'compare']);
+  if (op === 'compare') {
+    const left = numerator1 / denominator1;
+    const right = numerator2 / denominator2;
+    const leftExpr = `${numerator1}/${denominator1}`;
+    const rightExpr = `${numerator2}/${denominator2}`;
+    const correct =
+      left > right
+        ? `${leftExpr} > ${rightExpr}`
+        : left < right
+        ? `${leftExpr} < ${rightExpr}`
+        : `${leftExpr} = ${rightExpr}`;
+    const wrongs = [
+      `${leftExpr} > ${rightExpr}`,
+      `${leftExpr} < ${rightExpr}`,
+      `${leftExpr} = ${rightExpr}`,
+    ].filter((choice) => choice !== correct);
+    return {
+      statement: `Comparer les fractions ${leftExpr} et ${rightExpr}.`,
+      ...buildChoiceSet(correct, wrongs),
+      explanation: `On compare en croisant : ${numerator1}×${denominator2} = ${numerator1 * denominator2} et ${numerator2}×${
+        denominator1
+      } = ${numerator2 * denominator1} ⇒ ${correct}.`,
+    };
+  }
+  let numerator;
+  let denominator;
+  let statement;
+  if (op === 'sub') {
+    statement = `Calculer ${numerator1}/${denominator1} - ${numerator2}/${denominator2}.`;
+    numerator = numerator1 * denominator2 - numerator2 * denominator1;
+    denominator = denominator1 * denominator2;
+  } else if (op === 'mul') {
+    statement = `Calculer ${numerator1}/${denominator1} × ${numerator2}/${denominator2}.`;
+    numerator = numerator1 * numerator2;
+    denominator = denominator1 * denominator2;
+  } else {
+    statement = `Calculer ${numerator1}/${denominator1} ÷ ${numerator2}/${denominator2}.`;
+    numerator = numerator1 * denominator2;
+    denominator = denominator1 * numerator2;
+  }
+  const simplified = simplifyFraction(numerator, denominator);
+  const correct = `${simplified.numerator}/${simplified.denominator}`;
+  const wrongs = [
+    `${numerator}/${denominator}`,
+    `${simplified.denominator}/${simplified.numerator}`,
+    `${numerator1 + numerator2}/${denominator1 + denominator2}`,
+  ];
+  return {
+    statement,
+    ...buildChoiceSet(correct, wrongs),
+    explanation: `On effectue l'opération puis on simplifie : ${numerator}/${denominator} = ${correct}.`,
+  };
+}
+
 function genOrderOfMagnitude() {
   const a = randInt(12, 98);
   const b = randInt(12, 98);
@@ -168,6 +286,27 @@ function genOrderOfMagnitude() {
     statement: `Donner un ordre de grandeur pour ${a} × ${b}.`,
     ...buildChoiceSet(`${approx}`, wrongs.map((v) => `${v}`)),
     explanation: `${a} ≈ ${Math.round(a / 10) * 10}, ${b} ≈ ${Math.round(b / 10) * 10} ⇒ produit ≈ ${approx}.`,
+  };
+}
+
+function genPlausibilityCheck() {
+  const distance = randInt(60, 400);
+  const duration = randInt(1, 5);
+  const trueSpeed = distance / duration;
+  const plausible = Math.random() < 0.5;
+  const displayedSpeed = plausible ? trueSpeed : trueSpeed * randomItem([0.1, 10]);
+  const correct = plausible ? 'Oui, le résultat est cohérent.' : 'Non, le résultat est invraisemblable.';
+  const wrongs = plausible
+    ? ['Non, le résultat est invraisemblable.', 'Impossible à vérifier.', 'Oui, car la vitesse dépasse 300 km/h.']
+    : ['Oui, le résultat est cohérent.', 'Impossible à vérifier.', 'Non, car la distance est trop courte.'];
+  return {
+    statement: `Pour un trajet de ${distance} km parcouru en ${duration} h, un élève annonce une vitesse moyenne de ${formatNumber(
+      displayedSpeed,
+    )} km/h. Ce résultat est-il plausible ?`,
+    ...buildChoiceSet(correct, wrongs),
+    explanation: `La vitesse moyenne vaut distance ÷ durée = ${distance}/${duration} = ${formatNumber(
+      trueSpeed,
+    )} km/h ${plausible ? 'donc la valeur est cohérente.' : "et non ${formatNumber(displayedSpeed)} km/h"}.`,
   };
 }
 
@@ -226,6 +365,97 @@ function genUnitConversionSpeed() {
     statement: `Convertir ${speed} km/h en m/s.`,
     ...buildChoiceSet(`${formatNumber(converted)} m/s`, wrongs.map((v) => `${formatNumber(v)} m/s`)),
     explanation: `1 km/h = 1000/3600 m/s ⇒ ${speed} km/h = ${formatNumber(converted)} m/s.`,
+  };
+}
+
+function genUnitConversionVolume() {
+  const units = [
+    { unit: 'm³', factor: 1 },
+    { unit: 'dm³', factor: 0.001 },
+    { unit: 'cm³', factor: 0.000001 },
+  ];
+  const from = randomItem(units);
+  let to = randomItem(units);
+  while (to.unit === from.unit) {
+    to = randomItem(units);
+  }
+  const value = randInt(2, 40);
+  const base = value * from.factor;
+  const converted = base / to.factor;
+  const wrongs = [converted * 1000, converted / 1000, base];
+  return {
+    statement: `Convertir ${value} ${from.unit} en ${to.unit}.`,
+    ...buildChoiceSet(`${formatNumber(converted)} ${to.unit}`, wrongs.map((v) => `${formatNumber(v)} ${to.unit}`)),
+    explanation: `Les volumes se convertissent avec un facteur 1000 entre unités successives : ${formatNumber(
+      converted,
+    )} ${to.unit}.`,
+  };
+}
+
+function genUnitConversionCapacity() {
+  const units = [
+    { unit: 'L', factor: 1 },
+    { unit: 'cL', factor: 0.01 },
+    { unit: 'mL', factor: 0.001 },
+  ];
+  const from = randomItem(units);
+  let to = randomItem(units);
+  while (to.unit === from.unit) {
+    to = randomItem(units);
+  }
+  const value = randInt(5, 150);
+  const base = value * from.factor;
+  const converted = base / to.factor;
+  const wrongs = [converted * 10, converted / 10, base];
+  return {
+    statement: `Convertir ${value} ${from.unit} en ${to.unit}.`,
+    ...buildChoiceSet(`${formatNumber(converted)} ${to.unit}`, wrongs.map((v) => `${formatNumber(v)} ${to.unit}`)),
+    explanation: `On convertit en litres puis dans l'unité cible : ${formatNumber(converted)} ${to.unit}.`,
+  };
+}
+
+function genUnitConversionDuration() {
+  const units = [
+    { unit: 'h', factor: 3600 },
+    { unit: 'min', factor: 60 },
+    { unit: 's', factor: 1 },
+  ];
+  const from = randomItem(units);
+  let to = randomItem(units);
+  while (to.unit === from.unit) {
+    to = randomItem(units);
+  }
+  const value = randInt(1, 180);
+  const seconds = value * from.factor;
+  const converted = seconds / to.factor;
+  const wrongs = [converted * 60, converted / 60, seconds];
+  return {
+    statement: `Convertir ${value} ${from.unit} en ${to.unit}.`,
+    ...buildChoiceSet(`${formatNumber(converted)} ${to.unit}`, wrongs.map((v) => `${formatNumber(v)} ${to.unit}`)),
+    explanation: `On passe par les secondes : ${value} ${from.unit} = ${seconds} s = ${formatNumber(converted)} ${to.unit}.`,
+  };
+}
+
+function genUnitConversionMass() {
+  const units = [
+    { unit: 't', factor: 1000 },
+    { unit: 'kg', factor: 1 },
+    { unit: 'g', factor: 0.001 },
+    { unit: 'mg', factor: 0.000001 },
+  ];
+  const from = randomItem(units);
+  let to = randomItem(units);
+  while (to.unit === from.unit) {
+    to = randomItem(units);
+  }
+  const value = randInt(2, 500);
+  const base = value * from.factor;
+  const converted = base / to.factor;
+  const wrongs = [converted * 1000, converted / 1000, base];
+  return {
+    statement: `Convertir ${value} ${from.unit} en ${to.unit}.`,
+    ...buildChoiceSet(`${formatNumber(converted)} ${to.unit}`, wrongs.map((v) => `${formatNumber(v)} ${to.unit}`)),
+    explanation: `On passe par le kilogramme comme unité pivot : ${formatNumber(converted)} ${to.unit}.`,
   };
 }
 
@@ -320,24 +550,154 @@ function genDevelopIdentity() {
   };
 }
 
+function genLiteralSigns() {
+  const a = randInt(2, 9);
+  const b = randInt(1, 8);
+  const scenarios = [
+    {
+      statement: `Simplifier -(x + ${a}).`,
+      correct: `-x - ${a}`,
+      wrongs: [`x - ${a}`, `-x + ${a}`, `${a} - x`],
+    },
+    {
+      statement: `Développer -(x - ${b}).`,
+      correct: `${b} - x`,
+      wrongs: [`-x - ${b}`, `x - ${b}`, `${b} + x`],
+    },
+    {
+      statement: `Que vaut (-1) × (${a}x) ?`,
+      correct: `-${a}x`,
+      wrongs: [`${a}x`, `${a} - x`, `${a}`],
+    },
+    {
+      statement: `Quel est l'inverse de ${a}?`,
+      correct: `1/${a}`,
+      wrongs: [`-1/${a}`, `${a}`, `${a}²`],
+    },
+  ];
+  const chosen = randomItem(scenarios);
+  return {
+    statement: chosen.statement,
+    ...buildChoiceSet(chosen.correct, chosen.wrongs),
+    explanation: 'On applique les règles de signe et les inverses listés dans le BO.',
+  };
+}
+
+function genFactorizeCommonTerm() {
+  const a = randInt(2, 8);
+  const b = randInt(2, 8);
+  const useSquare = Math.random() < 0.5;
+  const expression = useSquare
+    ? `${a}x² + ${b}x`
+    : `${a}x + ${b}x`;
+  const factorized = useSquare ? `x(${a}x + ${b})` : `(${a + b})x`;
+  const wrongs = useSquare
+    ? [`(${a} + ${b})x`, `${a}x + ${b}`, `x(${a + b})`]
+    : [`${a + b}x²`, `x(${a} + ${b})`, `${a}x + ${b}x`];
+  return {
+    statement: `Factoriser ${expression}.`,
+    ...buildChoiceSet(factorized, wrongs),
+    explanation: `On met ${useSquare ? 'x' : 'x'} en facteur commun et on obtient ${factorized}.`,
+  };
+}
+
+function genFactorizeQuadratic() {
+  const root1 = randInt(-5, 5) || 1;
+  const root2 = randInt(-5, 5) || -2;
+  const b = -(root1 + root2);
+  const c = root1 * root2;
+  const expression = `x² ${formatSigned(b)}x ${formatSigned(c)}`;
+  const factorized = `(x ${formatSigned(-root1)})(x ${formatSigned(-root2)})`;
+  const wrongs = [
+    `(x ${formatSigned(root1)})(x ${formatSigned(root2)})`,
+    `(x ${formatSigned(-root1)})(x ${formatSigned(root2)})`,
+    `x(x ${formatSigned(b)}) + ${c}`,
+  ];
+  return {
+    statement: `Factoriser ${expression}.`,
+    ...buildChoiceSet(factorized, wrongs),
+    explanation: `On cherche deux nombres dont la somme vaut ${-b} et le produit ${c} : ${root1} et ${root2}.`,
+  };
+}
+
+function genLinearInequality() {
+  const a = randInt(-6, 6) || -3;
+  const b = randInt(-8, 8);
+  const c = randInt(-6, 10);
+  const inequality = randomItem(['<', '>']);
+  const rhs = c - b;
+  const rawSolution = rhs / a;
+  const needsFlip = a < 0;
+  const symbol = needsFlip ? (inequality === '<' ? '>' : '<') : inequality;
+  const solution = `x ${symbol} ${rawSolution.toFixed(1)}`;
+  const wrongs = [
+    `x ${inequality} ${rawSolution.toFixed(1)}`,
+    `x ${symbol} ${(-rawSolution).toFixed(1)}`,
+    `x = ${rawSolution.toFixed(1)}`,
+  ];
+  const statement = `Résoudre ${a}x ${formatSigned(b)} ${inequality} ${c}.`;
+  return {
+    statement,
+    ...buildChoiceSet(solution, wrongs),
+    explanation: `On isole x : ${a}x ${inequality} ${rhs} ⇒ ${needsFlip ? 'division par un nombre négatif, on inverse le sens' : ''} ${
+      solution
+    }.`,
+  };
+}
+
+function genSignFirstDegree() {
+  const slope = randInt(-5, 5) || 2;
+  const intercept = randInt(-6, 6);
+  const root = -intercept / slope;
+  const statement = `Donner le signe de f(x) = ${slope}x ${formatSigned(intercept)}.`;
+  const correct =
+    slope > 0
+      ? `f(x) > 0 pour x > ${root.toFixed(1)} et f(x) < 0 pour x < ${root.toFixed(1)}.`
+      : `f(x) > 0 pour x < ${root.toFixed(1)} et f(x) < 0 pour x > ${root.toFixed(1)}.`;
+  const wrongs = [
+    'f(x) garde toujours le même signe.',
+    slope > 0
+      ? `f(x) > 0 pour x < ${root.toFixed(1)}.`
+      : `f(x) > 0 pour x > ${root.toFixed(1)}.`,
+    `Le signe dépend uniquement du coefficient directeur.`,
+  ];
+  return {
+    statement,
+    ...buildChoiceSet(correct, wrongs),
+    explanation: `La racine vaut -b/a = ${root.toFixed(1)} puis on étudie les intervalles selon le signe de ${slope}.`,
+  };
+}
+
 const calculQuestions = [
   genLinearEquation,
   genFractionSum,
+  genFractionOperations,
   genPowerRule,
   genMentalMath,
   genCompareNumbers,
+  genCompareViaComputation,
   genDecimalFractionConversion,
   genPercentToDecimal,
   genOrderOfMagnitude,
+  genPlausibilityCheck,
   genUnitConversionLength,
   genUnitConversionArea,
   genUnitConversionSpeed,
+  genUnitConversionVolume,
+  genUnitConversionCapacity,
+  genUnitConversionDuration,
+  genUnitConversionMass,
   genZeroProductEquation,
   genIsolateVariable,
   genFormulaApplication,
   genSquareEquation,
   genRationalEquation,
   genDevelopIdentity,
+  genLiteralSigns,
+  genFactorizeCommonTerm,
+  genFactorizeQuadratic,
+  genLinearInequality,
+  genSignFirstDegree,
 ];
 
 function genPercentOfValue() {
@@ -746,6 +1106,38 @@ function genGraphSolveZero() {
   };
 }
 
+function genGraphSolveK() {
+  const slope = randInt(-3, 3) || 2;
+  const intercept = randInt(-4, 4);
+  const xTarget = randInt(-3, 3);
+  const k = slope * xTarget + intercept;
+  const compare = Math.random() < 0.5 ? '=' : '<';
+  const description = `D'après le graphique, résoudre f(x) ${compare} ${k}.`;
+  let correct;
+  let wrongs;
+  if (compare === '=') {
+    correct = `${xTarget}`;
+    wrongs = [`${xTarget + 1}`, `${xTarget - 1}`, `${-xTarget}`];
+  } else {
+    const inequalitySolution = slope > 0 ? `x < ${xTarget}` : `x > ${xTarget}`;
+    correct = inequalitySolution;
+    wrongs = [
+      slope > 0 ? `x > ${xTarget}` : `x < ${xTarget}`,
+      `x = ${xTarget}`,
+      slope > 0 ? `x < ${xTarget + 1}` : `x > ${xTarget - 1}`,
+    ];
+  }
+  return {
+    statement: description,
+    statementHTML: `${description}<br/>${createLineGraph(slope, intercept)}`,
+    ...buildChoiceSet(correct, wrongs),
+    explanation:
+      compare === '='
+        ? `On lit l'intersection avec la droite horizontale y = ${k}, obtenue pour x = ${xTarget}.`
+        : `La droite est ${slope > 0 ? 'croissante' : 'décroissante'} : f(x) < ${k} ⇔ ${correct}.`,
+  };
+}
+
 function genPointSlopeEquation() {
   const slope = randInt(-4, 4) || 1;
   const x0 = randInt(-3, 3);
@@ -760,6 +1152,98 @@ function genPointSlopeEquation() {
   };
 }
 
+function genPointOnCurve() {
+  const a = randInt(1, 4);
+  const b = randInt(-4, 4);
+  const c = randInt(-3, 5);
+  const x0 = randInt(-3, 3);
+  const belongs = Math.random() < 0.5;
+  const yExact = a * x0 * x0 + b * x0 + c;
+  const y0 = belongs ? yExact : yExact + randInt(1, 4);
+  const statement = `Le point (${x0}; ${y0}) appartient-il à la courbe d'équation y = ${a}x² ${formatSigned(b)}x ${formatSigned(c)} ?`;
+  const correct = belongs ? 'Oui' : 'Non';
+  const wrongs = belongs ? ['Non', 'Impossible à dire', 'Oui, uniquement si x > 0'] : ['Oui', 'Impossible à dire', 'Toujours'];
+  return {
+    statement,
+    ...buildChoiceSet(correct, wrongs),
+    explanation: `On calcule f(${x0}) = ${a}×${x0}² ${formatSigned(b)}×${x0} ${formatSigned(c)} = ${yExact} ⇒ ${correct}.`,
+  };
+}
+
+function genGraphSign() {
+  const slope = randInt(-3, 3) || 2;
+  const intercept = randInt(-4, 4);
+  const root = -intercept / slope;
+  const description = 'À partir du graphique, déterminer où f(x) est positive.';
+  const positiveInterval = slope > 0 ? `x > ${root.toFixed(1)}` : `x < ${root.toFixed(1)}`;
+  const correct = `f(x) > 0 pour ${positiveInterval}.`;
+  const wrongs = [
+    `f(x) > 0 pour ${slope > 0 ? 'x <' : 'x >'} ${root.toFixed(1)}.`,
+    'f(x) est toujours positive.',
+    'On ne peut pas conclure.',
+  ];
+  return {
+    statement: description,
+    statementHTML: `${description}<br/>${createLineGraph(slope, intercept)}`,
+    ...buildChoiceSet(correct, wrongs),
+    explanation: `Le signe change à la racine x = ${root.toFixed(1)} et dépend du signe de ${slope}.`,
+  };
+}
+
+function genDrawLine() {
+  const useEquation = Math.random() < 0.5;
+  if (useEquation) {
+    const slope = randInt(-3, 3) || 1;
+    const intercept = randInt(-4, 4);
+    const p1 = `(0 ; ${intercept})`;
+    const p2 = `(1 ; ${slope + intercept})`;
+    const correct = `Placer les points ${p1} et ${p2} puis tracer la droite.`;
+    const wrongs = [
+      `Placer (${slope}; 0) et (${intercept}; 1).`,
+      `Tracer une droite horizontale passant par y = ${intercept}.`,
+      `Placer (0 ; ${slope}) et (1 ; ${intercept}).`,
+    ];
+    const statement = `Comment tracer la droite d'équation y = ${slope}x ${formatSigned(intercept)} ?`;
+    return {
+      statement,
+      ...buildChoiceSet(correct, wrongs),
+      explanation: `On repère l'ordonnée à l'origine (${p1}) puis un second point obtenu avec le coefficient directeur : ${p2}.`,
+    };
+  }
+  const slope = randInt(-3, 3) || 2;
+  const x0 = randInt(-3, 3);
+  const y0 = randInt(-4, 4);
+  const p2 = `(${x0 + 1} ; ${y0 + slope})`;
+  const statement = `Pour tracer la droite passant par (${x0} ; ${y0}) de coefficient directeur ${slope}, quel second point peut-on utiliser ?`;
+  const correct = p2;
+  const wrongs = [`(${x0 + 1} ; ${y0 - slope})`, `(${x0} ; ${y0 + slope})`, `(${x0 - 1} ; ${y0 + slope})`];
+  return {
+    statement,
+    ...buildChoiceSet(correct, wrongs),
+    explanation: `Une pente de ${slope} signifie qu'en augmentant x d'une unité, y varie de ${slope} ⇒ point ${p2}.`,
+  };
+}
+
+function genEquationFromGraph() {
+  const slope = randInt(-3, 3) || 2;
+  const intercept = randInt(-3, 3);
+  const description = 'Quelle est l’équation réduite de la droite représentée ?';
+  const correct = `y = ${slope}x ${formatSigned(intercept)}`;
+  const wrongs = [
+    `y = ${slope}x ${formatSigned(-intercept)}`,
+    `y = ${-slope}x ${formatSigned(intercept)}`,
+    `y = ${slope}(x ${formatSigned(-intercept)})`,
+  ];
+  return {
+    statement: description,
+    statementHTML: `${description}<br/>${createLineGraph(slope, intercept)}`,
+    ...buildChoiceSet(correct, wrongs),
+    explanation: `On lit l'ordonnée à l'origine (${intercept}) et la pente ${slope} pour écrire y = ${slope}x ${formatSigned(
+      intercept,
+    )}.`,
+  };
+}
+
 const functionQuestions = [
   genEvaluateLinearFunction,
   genSlopeFromTable,
@@ -769,8 +1253,14 @@ const functionQuestions = [
   genImagePreimage,
   genRecognizeFunction,
   genSignFromFactorized,
+  genSignFirstDegree,
+  genPointOnCurve,
   genGraphReadValue,
+  genGraphSolveK,
   genGraphSolveZero,
+  genGraphSign,
+  genDrawLine,
+  genEquationFromGraph,
   genPointSlopeEquation,
 ];
 
@@ -868,13 +1358,66 @@ function genScatterTrend() {
   };
 }
 
+function genPieChartReading() {
+  const angle = randomItem([60, 90, 120, 150, 180]);
+  const percent = ((angle / 360) * 100).toFixed(1);
+  const statement = `Dans un diagramme circulaire, le secteur A mesure ${angle}°. Quelle part du total représente-t-il ?`;
+  const correct = `${percent}%`;
+  const wrongs = [`${(angle / 180 * 100).toFixed(1)}%`, `${angle}%`, `${(360 - angle) / 360}`];
+  return {
+    statement,
+    ...buildChoiceSet(correct, wrongs),
+    explanation: `La part vaut angle/360 = ${angle}/360 = ${percent}%.`,
+  };
+}
+
+function genTimeSeriesCommentary() {
+  const startYear = 2020;
+  const values = [randInt(40, 120)];
+  values.push(values[0] + randInt(-15, 25));
+  values.push(values[1] + randInt(-10, 30));
+  const years = [startYear, startYear + 1, startYear + 2];
+  const trend = values[2] > values[0] ? 'augmente globalement' : 'diminue globalement';
+  const statement = `Une courbe chronologique passe par (${years[0]}, ${values[0]}), (${years[1]}, ${values[1]}) et (${years[2]}, ${
+    values[2]
+  }). Que peut-on dire de l'évolution ?`;
+  const correct = values[2] > values[0] ? 'La grandeur augmente globalement.' : 'La grandeur diminue globalement.';
+  const wrongs = [
+    'Elle reste constante.',
+    `Elle ${values[2] > values[0] ? 'diminue' : 'augmente'} sans aucune hausse/baisse intermédiaire.`,
+    'Impossible sans calcul exact.',
+  ];
+  return {
+    statement,
+    ...buildChoiceSet(correct, wrongs),
+    explanation: `On lit la tendance globale de la courbe : ${values[0]} → ${values[2]} ⇒ ${trend}.`,
+  };
+}
+
+function genBoxPlotReading() {
+  const q1 = randInt(20, 40);
+  const median = q1 + randInt(2, 10);
+  const q3 = median + randInt(2, 10);
+  const statement = `Dans un diagramme en boîte avec Q₁ = ${q1}, médiane = ${median} et Q₃ = ${q3}, quel est l'écart interquartile ?`;
+  const correct = `${q3 - q1}`;
+  const wrongs = [`${median}`, `${q3 - median}`, `${median - q1}`];
+  return {
+    statement,
+    ...buildChoiceSet(correct, wrongs),
+    explanation: `Écart interquartile = Q₃ - Q₁ = ${q3} - ${q1} = ${q3 - q1}.`,
+  };
+}
+
 const statisticsQuestions = [
   genMeanValue,
   genMedian,
   genQuartile,
   genBoxPlotComparison,
+  genBoxPlotReading,
   genDiagramReading,
+  genPieChartReading,
   genGraphToData,
+  genTimeSeriesCommentary,
   genScatterTrend,
 ];
 
@@ -953,6 +1496,30 @@ function genSumEvent() {
   };
 }
 
+function genEventBySum() {
+  const probs = [randInt(1, 4) / 10, randInt(1, 4) / 10, randInt(1, 4) / 10];
+  const totalAssigned = probs.reduce((acc, value) => acc + value, 0);
+  const remaining = Math.max(0, 1 - totalAssigned);
+  const options = ['A', 'B', 'C', 'D'];
+  const listed = probs.map((prob, index) => `${options[index]} : ${prob.toFixed(2)}`);
+  listed.push(`${options[3]} : ${remaining.toFixed(2)}`);
+  const targetIndices = [0, 2];
+  const statement = `On considère quatre issues avec probabilités ${listed.join(', ')}. Quelle est la probabilité de l'événement « ${
+    options[targetIndices[0]]
+  } ou ${options[targetIndices[1]]} » ?`;
+  const prob = (probs[targetIndices[0]] + probs[targetIndices[1]]).toFixed(2);
+  const wrongs = [
+    probs[targetIndices[0]].toFixed(2),
+    probs[targetIndices[1]].toFixed(2),
+    (1 - prob).toFixed(2),
+  ];
+  return {
+    statement,
+    ...buildChoiceSet(prob, wrongs),
+    explanation: `On additionne les probabilités des issues composant l'événement : ${prob}.`,
+  };
+}
+
 function genConditionalFromTree() {
   const pA = randInt(2, 9) / 10;
   const pBgivenA = randInt(2, 9) / 10;
@@ -995,13 +1562,26 @@ function genBinomialProbability() {
   };
 }
 
+function genProbabilityBounds() {
+  const valid = (randInt(1, 9) / 10).toFixed(2);
+  const wrongs = ['-0.2', '1.5', `${randInt(2, 9)}`];
+  const statement = 'Parmi les valeurs suivantes, laquelle peut représenter une probabilité ?';
+  return {
+    statement,
+    ...buildChoiceSet(valid, wrongs),
+    explanation: 'Une probabilité est comprise entre 0 et 1.',
+  };
+}
+
 const probabilityQuestions = [
   genBagProbability,
+  genProbabilityBounds,
   genComplementaryEvent,
   genIndependentEvents,
   genTreeProbability,
   genConditionalFromTable,
   genSumEvent,
+  genEventBySum,
   genConditionalFromTree,
   genNotationQuestion,
   genBinomialProbability,
