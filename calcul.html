@@ -1,131 +1,101 @@
 <!DOCTYPE html>
 <html lang="fr">
-<head>
-    <meta charset="UTF-8">
-    <title>QCM Automatismes – Calcul numérique et algébrique</title>
-    <style>
-        body {
-            font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-            max-width: 900px;
-            margin: 20px auto;
-            padding: 0 15px 40px;
-            background: #f5f5f5;
-        }
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Calcul numérique et algébrique · Automatismes Première</title>
+    <link rel="stylesheet" href="styles.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <header class="hero hero--compact" id="top">
+      <nav class="nav">
+        <a class="logo" href="index.html">Automatismes</a>
+        <ul class="nav__list">
+          <li><a href="calcul.html">Calcul numérique</a></li>
+          <li><a href="proportions.html">Proportions</a></li>
+          <li><a href="evolutions.html">Évolutions</a></li>
+          <li><a href="fonctions.html">Fonctions</a></li>
+          <li><a href="statistiques.html">Statistiques</a></li>
+          <li><a href="probabilites.html">Probabilités</a></li>
+        </ul>
+      </nav>
+      <div class="hero__content">
+        <p class="eyebrow">Générateur</p>
+        <h1>Calcul numérique et algébrique</h1>
+        <p>
+          Retrouve le même univers visuel que la page d'accueil et entraîne-toi sur
+          des séries de 10 questions couvrant tout le programme de calculs
+          usuels.
+        </p>
+        <div class="hero__cta">
+          <a class="btn" href="#entrainement">Lancer une série</a>
+          <a class="btn btn--ghost" href="index.html">← Retour à l'accueil</a>
+        </div>
+      </div>
+    </header>
 
-        h1 {
-            text-align: center;
-            margin-bottom: 0.2em;
-        }
+    <main>
+      <section class="section intro">
+        <div>
+          <h2>Compétences mobilisées</h2>
+          <p>
+            Compare des nombres, manipule les fractions, simplifie les puissances
+            et maîtrise le calcul littéral pour répondre efficacement sous
+            pression.
+          </p>
+        </div>
+        <ul>
+          <li>10 questions générées aléatoirement à chaque session.</li>
+          <li>
+            Explications détaillées pour comprendre les erreurs et consolider les
+            réflexes.
+          </li>
+          <li>Bouton « Nouvelle série » pour varier les situations.</li>
+        </ul>
+      </section>
 
-        h2 {
-            margin-top: 0;
-            text-align: center;
-            font-size: 1rem;
-            font-weight: normal;
-            color: #555;
-        }
+      <section class="module" id="entrainement">
+        <div class="module__header">
+          <p class="eyebrow">Session active</p>
+          <h2>Générateur de calculs numériques</h2>
+          <p>Crée un QCM complet, corrige ou affiche toutes les réponses.</p>
+        </div>
+        <div class="generator">
+          <p class="generator__intro">
+            Chaque question propose quatre réponses possibles. Lance une nouvelle
+            série dès que tu veux renouveler l'entraînement.
+          </p>
+          <div class="generator__actions" id="controls">
+            <button class="btn" type="button" id="newSet">Nouvelle série</button>
+            <button class="btn btn--ghost" type="button" id="correct">
+              Corriger
+            </button>
+            <button class="btn btn--ghost" type="button" id="showAnswers">
+              Afficher toutes les réponses
+            </button>
+          </div>
+          <div id="quiz" class="generator__questions"></div>
+          <div id="result" class="generator__result" aria-live="polite"></div>
+        </div>
+      </section>
+    </main>
 
-        #controls {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
-            justify-content: center;
-            margin: 15px 0 20px;
-        }
+    <footer class="footer">
+      <p>
+        &copy; <span id="year"></span> Automatisation des calculs — Prépare ton
+        Bac sereinement.
+      </p>
+      <a href="#top">Retour en haut</a>
+    </footer>
 
-        button {
-            border: none;
-            padding: 8px 14px;
-            border-radius: 6px;
-            cursor: pointer;
-            font-size: 0.95rem;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.2);
-        }
-
-        button#newSet {
-            background: #007bff;
-            color: white;
-        }
-
-        button#correct {
-            background: #28a745;
-            color: white;
-        }
-
-        button#showAnswers {
-            background: #6c757d;
-            color: white;
-        }
-
-        #quiz {
-            margin-top: 10px;
-        }
-
-        .question {
-            background: white;
-            border-radius: 8px;
-            padding: 10px 12px;
-            margin-bottom: 10px;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-        }
-
-        .statement {
-            font-weight: 600;
-            margin-bottom: 6px;
-        }
-
-        .choices label {
-            display: block;
-            margin: 2px 0;
-            cursor: pointer;
-        }
-
-        .choices input {
-            margin-right: 6px;
-        }
-
-        .feedback {
-            margin-top: 4px;
-            font-size: 0.9rem;
-        }
-
-        .correct {
-            border-left: 4px solid #28a745;
-            background: #e9f7ef;
-        }
-
-        .incorrect {
-            border-left: 4px solid #dc3545;
-            background: #fbe9eb;
-        }
-
-        #result {
-            margin-top: 15px;
-            font-weight: bold;
-            text-align: center;
-            font-size: 1.05rem;
-        }
-
-        .answer-text {
-            font-style: italic;
-        }
-    </style>
-</head>
-<body>
-
-<h1>QCM – Automatismes</h1>
-<h2>Calcul numérique et algébrique (Première spécialité)</h2>
-
-<div id="controls">
-    <button id="newSet">Nouvelle série</button>
-    <button id="correct">Corriger</button>
-    <button id="showAnswers">Afficher toutes les réponses</button>
-</div>
-
-<div id="quiz"></div>
-<div id="result"></div>
-
-<script>
+    <script src="scripts.js"></script>
+    <script>
 /* ===================== OUTILS GÉNÉRAUX ===================== */
 
 const NB_QUESTIONS = 10;
@@ -263,7 +233,8 @@ function genFractions() {
         statement: `Calculer : ${p}/${q} + ${r}/${s}.`,
         choices: rawChoices,
         correctIndex,
-        explanation: `On met au même dénominateur : ${p}/${q} + ${r}/${s} = (${p}×${s} + ${r}×${q})/(${q}×${s}) = ${num}/${den} = ${correctFrac}.`
+        explanation: `On met au même dénominateur : ${p}/${q} + ${r}/${s} = (${p}×${s} + ${r}×${q})/(${q}×${s}) = ${num}/${den}
+= ${correctFrac}.`
     };
 }
 
@@ -603,6 +574,6 @@ showAnswersButton.addEventListener("click", () => {
 });
 
 initQuiz();
-</script>
-</body>
+    </script>
+  </body>
 </html>

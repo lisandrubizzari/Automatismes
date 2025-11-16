@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Proportions et pourcentages · Automatismes Première</title>
+    <title>Proportions et évolutions · Automatismes Première</title>
     <link rel="stylesheet" href="styles.css" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -27,45 +27,58 @@
       </nav>
       <div class="hero__content">
         <p class="eyebrow">Générateur</p>
-        <h1>Proportions et pourcentages</h1>
+        <h1>Proportions et évolutions</h1>
         <p>
-          Renforce tes réflexes sur les ratios, les parts de population et les
-          coefficients multiplicateurs dans les situations concrètes.
+          Retrouve l’immersion de la page d’accueil pour travailler les
+          pourcentages, coefficients multiplicateurs et remises successives,
+          exactement comme sur le générateur 1.
         </p>
-        <a class="btn" href="#entrainement">Lancer un QCM</a>
+        <div class="hero__cta">
+          <a class="btn" href="#entrainement">Lancer une série</a>
+          <a class="btn btn--ghost" href="index.html">← Retour à l'accueil</a>
+        </div>
       </div>
     </header>
 
     <main>
       <section class="section intro">
         <div>
-          <h2>Compétences ciblées</h2>
+          <h2>Compétences mobilisées</h2>
           <p>
-            Modéliser une proportion, passer d'un pourcentage à un coefficient et
-            interpréter des données issues d'études statistiques.
+            Convertis une proportion sous toutes ses écritures, calcule des
+            parts connues ou inconnues et anticipe les évolutions successives.
           </p>
         </div>
         <ul>
-          <li>Travaille les variations successives et les remises.</li>
-          <li>Visualise les étapes de calcul dans les corrections.</li>
-          <li>Compare plusieurs méthodes (tableau de proportionnalité, fraction, etc.).</li>
+          <li>10 questions générées aléatoirement à chaque session.</li>
+          <li>
+            Explications détaillées pour comprendre les erreurs et consolider les
+            réflexes.
+          </li>
+          <li>Boutons « Nouvelle série », « Corriger » et « Afficher toutes les réponses ».</li>
         </ul>
       </section>
 
       <section class="module" id="entrainement">
         <div class="module__header">
           <p class="eyebrow">Session active</p>
-          <h2>Générateur de QCM proportions</h2>
-          <p>Réponds mentalement avant de valider pour simuler un exercice flash.</p>
+          <h2>Générateur proportions & évolutions</h2>
+          <p>Crée un QCM complet, corrige ou affiche toutes les réponses.</p>
         </div>
-        <div class="qcm" data-category="proportions">
-          <p class="qcm__question"></p>
-          <div class="qcm__options"></div>
-          <div class="qcm__actions">
-            <button class="btn qcm__validate">Valider</button>
-            <button class="btn btn--ghost qcm__next">Nouvelle question</button>
+        <div class="generator">
+          <p class="generator__intro">
+            Chaque question propose quatre réponses possibles. Lance une nouvelle
+            série dès que tu veux renouveler l'entraînement.
+          </p>
+          <div class="generator__actions" id="controls">
+            <button class="btn" type="button" id="newSet">Nouvelle série</button>
+            <button class="btn btn--ghost" type="button" id="correct">Corriger</button>
+            <button class="btn btn--ghost" type="button" id="showAnswers">
+              Afficher toutes les réponses
+            </button>
           </div>
-          <p class="qcm__feedback" aria-live="polite"></p>
+          <div id="quiz" class="generator__questions"></div>
+          <div id="result" class="generator__result" aria-live="polite"></div>
         </div>
       </section>
     </main>
@@ -79,5 +92,292 @@
     </footer>
 
     <script src="scripts.js"></script>
+    <script>
+      const NB_QUESTIONS = 10;
+      const quizElement = document.getElementById("quiz");
+      const resultElement = document.getElementById("result");
+      const newSetButton = document.getElementById("newSet");
+      const correctButton = document.getElementById("correct");
+      const showAnswersButton = document.getElementById("showAnswers");
+      let quizData = [];
+
+      function randInt(min, max) {
+        return Math.floor(Math.random() * (max - min + 1)) + min;
+      }
+
+      function shuffle(array) {
+        for (let i = array.length - 1; i > 0; i--) {
+          const j = randInt(0, i);
+          [array[i], array[j]] = [array[j], array[i]];
+        }
+        return array;
+      }
+
+      function formatPercent(value) {
+        return value.toFixed(1).replace(".", ",") + " %";
+      }
+
+      function genConvertProportion() {
+        const a = randInt(1, 9);
+        const b = randInt(a + 1, 12);
+        const frac = `${a}/${b}`;
+        const dec = (a / b).toFixed(2).replace(".", ",");
+        const perc = Math.round((a / b) * 100) + " %";
+        const correctFormats = [frac, dec, perc];
+        const correct = correctFormats[randInt(0, correctFormats.length - 1)];
+        const wrongOptions = [
+          `${a * 2}/${b * 2}`,
+          (a / b).toFixed(3).replace(".", ","),
+          Math.round(((a / b) * 1000) / 10) + " %",
+        ];
+        shuffle(wrongOptions);
+        const distractors = wrongOptions.slice(0, 3);
+        const choices = shuffle([correct, ...distractors]);
+        return {
+          statement: `Quelle est une écriture correcte de la proportion correspondant à ${a} sur ${b} ?`,
+          choices,
+          correctIndex: choices.indexOf(correct),
+          explanation: `Les écritures correctes sont : ${frac}, ${dec}, ${perc}.`,
+        };
+      }
+
+      function genPartOfTotal() {
+        const total = randInt(100, 800);
+        const p = randInt(5, 40);
+        const part = Math.round((total * p) / 100);
+        const correct = String(part);
+        const wrongOptions = [
+          (total / p).toFixed(0),
+          Math.round((total * (p + 10)) / 100) + "",
+          Math.round((total * (p / 2)) / 100) + "",
+        ];
+        const choices = shuffle([correct, ...wrongOptions]);
+        return {
+          statement: `Calculer ${p} % de ${total}.`,
+          choices,
+          correctIndex: choices.indexOf(correct),
+          explanation: `${p} % de ${total} = ${total} × ${p}/100 = ${part}.`,
+        };
+      }
+
+      function genTotalFromPart() {
+        const p = randInt(15, 60);
+        const total = randInt(200, 800);
+        const part = Math.round((total * p) / 100);
+        const correct = String(total);
+        const wrongOptions = [
+          String(part * 2),
+          (part * (100 / (p + 10))).toFixed(0),
+          (p - 10 > 0 ? (part * (100 / (p - 10))).toFixed(0) : String(part + 50)),
+        ];
+        const choices = shuffle([correct, ...wrongOptions]);
+        return {
+          statement: `${part} représente ${p} %. Quel est le total ?`,
+          choices,
+          correctIndex: choices.indexOf(correct),
+          explanation: `part = total × p/100 → total = part × 100 / p = ${total}.`,
+        };
+      }
+
+      function genIncrease() {
+        const x = randInt(100, 300);
+        const t = randInt(5, 30);
+        const finalValue = Math.round(x * (1 + t / 100));
+        const correct = String(finalValue);
+        const wrongOptions = [
+          String(Math.round(x * (1 + (t + 5) / 100))),
+          String(Math.round(x * (1 - t / 100))),
+          String(x + t),
+        ];
+        const choices = shuffle([correct, ...wrongOptions]);
+        return {
+          statement: `${x} augmente de ${t} %. Quelle est la valeur finale ?`,
+          choices,
+          correctIndex: choices.indexOf(correct),
+          explanation: `Valeur finale = ${x} × (1 + ${t}/100) = ${finalValue}.`,
+        };
+      }
+
+      function genDecrease() {
+        const x = randInt(100, 300);
+        const t = randInt(5, 30);
+        const finalValue = Math.round(x * (1 - t / 100));
+        const correct = String(finalValue);
+        const wrongOptions = [
+          String(Math.round(x * (1 + t / 100))),
+          String(Math.round(x - t)),
+          String(Math.round(x * (1 - (t + 10) / 100))),
+        ];
+        const choices = shuffle([correct, ...wrongOptions]);
+        return {
+          statement: `${x} diminue de ${t} %. Quelle est la valeur finale ?`,
+          choices,
+          correctIndex: choices.indexOf(correct),
+          explanation: `Valeur finale = ${x} × (1 - ${t}/100) = ${finalValue}.`,
+        };
+      }
+
+      function genRate() {
+        const oldVal = randInt(50, 200);
+        const newVal = randInt(80, 300);
+        const rate = ((newVal - oldVal) / oldVal) * 100;
+        const correct = formatPercent(rate);
+        const wrongOptions = [
+          formatPercent(((oldVal - newVal) / oldVal) * 100),
+          formatPercent(((newVal - oldVal) / newVal) * 100),
+          formatPercent(rate + 10),
+        ];
+        const choices = shuffle([correct, ...wrongOptions]);
+        return {
+          statement: `Un indicateur passe de ${oldVal} à ${newVal}. Quel est le taux d’évolution ?`,
+          choices,
+          correctIndex: choices.indexOf(correct),
+          explanation: `Taux = (nouveau – ancien) / ancien × 100 = ${correct}.`,
+        };
+      }
+
+      function genDoubleEvolution() {
+        const t1 = randInt(5, 30);
+        const t2 = randInt(5, 30);
+        const totalRate = ((1 + t1 / 100) * (1 + t2 / 100) - 1) * 100;
+        const correct = formatPercent(totalRate);
+        const wrongOptions = [
+          `${t1 + t2} %`,
+          `${t1 + t2 + 5} %`,
+          formatPercent(100 * (t1 / 100 + t2 / 100 - (t1 * t2) / 10000)),
+        ];
+        const choices = shuffle([correct, ...wrongOptions]);
+        return {
+          statement: `On applique successivement +${t1} % puis +${t2} %. Quel est le taux global ?`,
+          choices,
+          correctIndex: choices.indexOf(correct),
+          explanation: `Taux global = (1+t1/100)(1+t2/100)-1 = ${correct}.`,
+        };
+      }
+
+      function genReciprocalRate() {
+        const t = randInt(10, 40);
+        const factor = 1 + t / 100;
+        const reciprocal = (1 / factor - 1) * 100;
+        const correct = formatPercent(reciprocal);
+        const wrongOptions = [
+          `-${t} %`,
+          formatPercent(t / (1 + t / 100)),
+          formatPercent(reciprocal + 5),
+        ];
+        const choices = shuffle([correct, ...wrongOptions]);
+        return {
+          statement: `Si une quantité augmente de ${t} %, de combien doit-elle diminuer ensuite pour revenir à la valeur initiale ?`,
+          choices,
+          correctIndex: choices.indexOf(correct),
+          explanation: `Taux réciproque = (1/(1+t/100) - 1) × 100 = ${correct}.`,
+        };
+      }
+
+      const generators = [
+        genConvertProportion,
+        genPartOfTotal,
+        genTotalFromPart,
+        genIncrease,
+        genDecrease,
+        genRate,
+        genDoubleEvolution,
+        genReciprocalRate,
+      ];
+
+      function generateQuiz() {
+        quizData = [];
+        for (let i = 0; i < NB_QUESTIONS; i++) {
+          const generator = generators[randInt(0, generators.length - 1)];
+          quizData.push(generator());
+        }
+      }
+
+      function renderQuiz() {
+        quizElement.innerHTML = "";
+        quizData.forEach((question, index) => {
+          const wrapper = document.createElement("div");
+          wrapper.className = "question";
+          wrapper.dataset.index = index;
+
+          const statement = document.createElement("p");
+          statement.className = "statement";
+          statement.innerHTML = `Question ${index + 1}. ${question.statement}`;
+          wrapper.appendChild(statement);
+
+          const choices = document.createElement("div");
+          choices.className = "choices";
+          question.choices.forEach((choice, choiceIndex) => {
+            const label = document.createElement("label");
+            const input = document.createElement("input");
+            input.type = "radio";
+            input.name = `q${index}`;
+            input.value = choiceIndex;
+            label.appendChild(input);
+            const span = document.createElement("span");
+            span.textContent = choice;
+            label.appendChild(span);
+            choices.appendChild(label);
+          });
+          wrapper.appendChild(choices);
+
+          const feedback = document.createElement("div");
+          feedback.className = "feedback";
+          wrapper.appendChild(feedback);
+
+          quizElement.appendChild(wrapper);
+        });
+        resultElement.textContent = "";
+      }
+
+      function correctQuiz() {
+        let score = 0;
+        quizData.forEach((question, index) => {
+          const card = document.querySelector(`.question[data-index="${index}"]`);
+          const feedback = card.querySelector(".feedback");
+          const selected = card.querySelector("input:checked");
+          card.classList.remove("correct", "incorrect");
+          feedback.textContent = "";
+
+          if (!selected) {
+            feedback.textContent = "Choisis une réponse avant de corriger.";
+            return;
+          }
+
+          if (Number(selected.value) === question.correctIndex) {
+            score++;
+            card.classList.add("correct");
+            feedback.innerHTML = `Bonne réponse ! ${question.explanation}`;
+          } else {
+            card.classList.add("incorrect");
+            feedback.innerHTML = `Réponse attendue : <span class="answer-text">${question.choices[question.correctIndex]}</span>. ${question.explanation}`;
+          }
+        });
+
+        resultElement.textContent = `Score : ${score} / ${quizData.length}`;
+      }
+
+      function showAllAnswers() {
+        quizData.forEach((question, index) => {
+          const card = document.querySelector(`.question[data-index="${index}"]`);
+          const feedback = card.querySelector(".feedback");
+          card.classList.remove("incorrect");
+          card.classList.add("correct");
+          feedback.innerHTML = `Réponse : <span class="answer-text">${question.choices[question.correctIndex]}</span>. ${question.explanation}`;
+        });
+        resultElement.textContent = "Réponses affichées pour toute la série.";
+      }
+
+      function initQuiz() {
+        generateQuiz();
+        renderQuiz();
+      }
+
+      newSetButton?.addEventListener("click", initQuiz);
+      correctButton?.addEventListener("click", correctQuiz);
+      showAnswersButton?.addEventListener("click", showAllAnswers);
+
+      initQuiz();
+    </script>
   </body>
 </html>
