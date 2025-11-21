@@ -33,8 +33,20 @@ function createLineGraph(a, b) {
   const yMax = 8;
   const mapX = (x) => ((x - xMin) / (xMax - xMin)) * width;
   const mapY = (y) => height - ((y - yMin) / (yMax - yMin)) * height;
-  const axisY = Math.min(Math.max(mapX(0), 0), width);
-  const axisX = Math.min(Math.max(mapY(0), 0), height);
+  const gridLinesX = Array.from({ length: xMax - xMin + 1 }, (_, i) => xMin + i).map((x) => {
+    const pos = mapX(x).toFixed(2);
+    const isAxis = Math.abs(x) < 1e-6;
+    return `<line x1="${pos}" y1="0" x2="${pos}" y2="${height}" stroke="${isAxis ? '#94a3b8' : '#e2e8f0'}" stroke-width="${
+      isAxis ? '0.8' : '0.6'
+    }" />`;
+  });
+  const gridLinesY = Array.from({ length: yMax - yMin + 1 }, (_, i) => yMin + i).map((y) => {
+    const pos = mapY(y).toFixed(2);
+    const isAxis = Math.abs(y) < 1e-6;
+    return `<line x1="0" y1="${pos}" x2="${width}" y2="${pos}" stroke="${isAxis ? '#94a3b8' : '#e2e8f0'}" stroke-width="${
+      isAxis ? '0.8' : '0.6'
+    }" />`;
+  });
   const path = `M ${mapX(xMin).toFixed(2)} ${mapY(a * xMin + b).toFixed(2)} L ${mapX(xMax).toFixed(2)} ${mapY(
     a * xMax + b,
   ).toFixed(2)}`;
@@ -42,8 +54,8 @@ function createLineGraph(a, b) {
     <svg class="mini-graph" viewBox="0 0 ${width} ${height}" role="img" aria-label="Mini graphique de la droite y = ${a}x ${
       b >= 0 ? '+ ' : '- '
     }${Math.abs(b)}">
-      <line x1="0" y1="${axisX}" x2="${width}" y2="${axisX}" stroke="#94a3b8" stroke-width="0.8" />
-      <line x1="${axisY}" y1="0" x2="${axisY}" y2="${height}" stroke="#94a3b8" stroke-width="0.8" />
+      ${gridLinesX.join('\n      ')}
+      ${gridLinesY.join('\n      ')}
       <path d="${path}" stroke="#6366f1" stroke-width="2" fill="none" />
     </svg>
   `;
