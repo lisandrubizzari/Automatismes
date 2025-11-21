@@ -1587,7 +1587,7 @@ const probabilityQuestions = [
   genBinomialProbability,
 ];
 
-const questionBanks = {
+export const questionBanks = {
   calcul: calculQuestions,
   proportions: proportionQuestions,
   evolutions: evolutionQuestions,
