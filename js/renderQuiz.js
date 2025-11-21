@@ -1,4 +1,5 @@
 const ALLOWED_TAGS = new Set(['br', 'span', 'strong', 'em', 'svg', 'line', 'path', 'g', 'rect', 'circle', 'title']);
+const SVG_TAGS = new Set(['svg', 'line', 'path', 'g', 'rect', 'circle', 'title']);
 const ALLOWED_ATTRS = {
   span: ['class'],
   strong: ['class'],
@@ -19,7 +20,9 @@ function sanitizeNode(node) {
   if (node.nodeType === Node.ELEMENT_NODE) {
     const tagName = node.tagName.toLowerCase();
     const allowedAttrs = ALLOWED_ATTRS[tagName] || [];
-    const safeElement = document.createElement(tagName);
+    const safeElement = SVG_TAGS.has(tagName)
+      ? document.createElementNS('http://www.w3.org/2000/svg', tagName)
+      : document.createElement(tagName);
     if (!ALLOWED_TAGS.has(tagName)) {
       const fragment = document.createDocumentFragment();
       node.childNodes.forEach((child) => fragment.appendChild(sanitizeNode(child)));

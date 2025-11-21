@@ -46,6 +46,10 @@ function initBacBlanc() {
   }
 
   function startNewSeries() {
+    if (!quizContainer) {
+      console.warn('[bacblanc] Zone de rendu introuvable (#quiz).');
+      return;
+    }
     questions = buildFullQuiz();
     renderer.render(questions);
     resetResult("Série prête : 12 questions issues des 6 thèmes. Bonne chance !");
@@ -53,7 +57,7 @@ function initBacBlanc() {
 
   function runCorrection() {
     if (!questions.length) {
-      resetResult('Génère d'abord une série pour lancer la correction.');
+      resetResult("Génère d'abord une série pour lancer la correction.");
       return;
     }
     const responses = renderer.getResponses();
@@ -65,7 +69,7 @@ function initBacBlanc() {
 
   function showAllAnswers() {
     if (!questions.length) {
-      resetResult('Aucune question chargée : clique sur « Nouvelle série » pour commencer.');
+      resetResult("Aucune question chargée : clique sur « Nouvelle série » pour commencer.");
       return;
     }
     revealAllAnswers(renderer, questions);
@@ -80,6 +84,10 @@ function initBacBlanc() {
   }
   if (showAnswersButton) {
     showAnswersButton.addEventListener('click', showAllAnswers);
+  }
+
+  if (quizContainer && newSetButton) {
+    startNewSeries();
   }
 }
 
