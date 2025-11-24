@@ -86,6 +86,31 @@ export function shuffle(array) {
   return clone;
 }
 
+export function validateChoices(correct, choices) {
+  if (!choices || !Array.isArray(choices)) {
+    throw new Error('ERROR: choices must be an array');
+  }
+  if (!choices.includes(correct)) {
+    throw new Error('ERROR: correct answer missing');
+  }
+  if (new Set(choices).size !== choices.length) {
+    throw new Error('ERROR: duplicated choices');
+  }
+}
+
+export function roundTo(value, decimals = 1) {
+  const factor = 10 ** decimals;
+  return Math.round(value * factor) / factor;
+}
+
+export function formatProbability(value, decimals = 2) {
+  const numeric = Number.parseFloat(value);
+  if (!Number.isFinite(numeric) || numeric < 0 || numeric > 1) {
+    throw new Error('ERROR: probability out of range');
+  }
+  return roundTo(numeric, decimals).toFixed(decimals);
+}
+
 export function formatSigned(value, { showPlus = true } = {}) {
   const sign = value >= 0 ? '+' : '-';
   const absoluteValue = Math.abs(value);
@@ -177,7 +202,8 @@ export function cancelSafeAnimationFrame(id) {
 
 export function buildChoiceSet(correct, wrongChoices) {
   const filtered = wrongChoices.filter((choice) => choice !== correct);
-  const choices = shuffle([correct, ...filtered]);
+  const uniqueWrong = Array.from(new Set(filtered));
+  const choices = shuffle([correct, ...uniqueWrong]);
   return {
     choices,
     correctIndex: choices.indexOf(correct),
