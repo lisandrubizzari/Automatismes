@@ -6,7 +6,7 @@ import {
   simplifyFraction,
   simplifySqrt,
   formatExponent,
-  validate,
+  validateChoices,
   roundTo,
   formatProbability,
 } from './utils.js';
@@ -1734,13 +1734,14 @@ export function buildQuestionSet(theme, count = 10) {
     }
     let question = null;
     let attempts = 0;
-    while (!question && attempts < 12) {
+    while (!question && attempts < 10) {
+      const candidate = generator();
       try {
-        const candidate = generator();
-        validate(candidate.choices[candidate.correctIndex], candidate.choices);
+        validateChoices(candidate.choices[candidate.correctIndex], candidate.choices);
         question = candidate;
       } catch (error) {
         attempts += 1;
+        // regenerate if invalid
       }
     }
     if (!question) {

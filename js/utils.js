@@ -98,16 +98,6 @@ export function validateChoices(correct, choices) {
   }
 }
 
-export function validate(correct, choices) {
-  validateChoices(correct, choices);
-  if (choices.length < 2) {
-    throw new Error('ERROR: not enough choices');
-  }
-  if (choices.some((choice) => choice === undefined || choice === null || choice === '')) {
-    throw new Error('ERROR: invalid empty choice detected');
-  }
-}
-
 export function roundTo(value, decimals = 1) {
   const factor = 10 ** decimals;
   return Math.round(value * factor) / factor;
