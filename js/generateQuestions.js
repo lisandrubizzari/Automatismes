@@ -6,6 +6,9 @@ import {
   simplifyFraction,
   simplifySqrt,
   formatExponent,
+  validate,
+  roundTo,
+  formatProbability,
 } from './utils.js';
 
 const DECIMALS = { minimumFractionDigits: 0, maximumFractionDigits: 2 };
@@ -574,6 +577,37 @@ function genDevelopIdentity() {
   };
 }
 
+function genFactorizeIdentityForms() {
+  const a = simpleInt(2, 8);
+  const b = simpleInt(1, 7);
+  const scenarios = [
+    {
+      expr: `${a * a} - ${b * b}`,
+      factorized: `(${a} - ${b})(${a} + ${b})`,
+      wrongs: [`(${a} - ${b})²`, `(${a} + ${b})²`, `${a * a} + ${b * b}`],
+      explanation: `a² - b² = (a - b)(a + b).`,
+    },
+    {
+      expr: `${a * a} + ${2 * a * b}x + ${b * b}x²`,
+      factorized: `(${a} + ${b}x)²`,
+      wrongs: [`(${a} - ${b}x)²`, `${a * a} + ${b * b}x²`, `${a}x + ${b}`],
+      explanation: `a² + 2ab + b² = (a + b)² appliqué à ${a} + ${b}x.`,
+    },
+    {
+      expr: `${a * a} - ${2 * a * b}x + ${b * b}x²`,
+      factorized: `(${a} - ${b}x)²`,
+      wrongs: [`(${a} + ${b}x)²`, `${a * a} - ${b * b}x²`, `${a} - ${b}x`],
+      explanation: `a² - 2ab + b² = (a - b)² appliqué à ${a} - ${b}x.`,
+    },
+  ];
+  const scenario = randomItem(scenarios);
+  return {
+    statement: `Factoriser ${scenario.expr}.`,
+    ...buildChoiceSet(scenario.factorized, scenario.wrongs),
+    explanation: scenario.explanation,
+  };
+}
+
 function genLiteralSigns() {
   const a = simpleInt(2, 9);
   const b = simpleInt(1, 8);
@@ -717,6 +751,7 @@ const calculQuestions = [
   genSquareEquation,
   genRationalEquation,
   genDevelopIdentity,
+  genFactorizeIdentityForms,
   genLiteralSigns,
   genFactorizeCommonTerm,
   genFactorizeQuadratic,
@@ -773,9 +808,18 @@ function genCoefficientMultiplicateur() {
   };
 }
 
+function pickCoherentShare() {
+  let total = 0;
+  let part = 0;
+  do {
+    total = simpleInt(40, 90);
+    part = simpleInt(5, total - 8);
+  } while (part <= 0 || part >= total || (part / total) * 100 >= 95);
+  return { part, total };
+}
+
 function genExpressProportion() {
-  const total = simpleInt(40, 90);
-  const part = simpleInt(5, total - 5);
+  const { part, total } = pickCoherentShare();
   const fraction = simplifyFraction(part, total);
   const percent = ((part / total) * 100).toFixed(1);
   const correct = `${percent}%`;
@@ -899,12 +943,12 @@ function genSuccessiveRates() {
 function genReciprocal() {
   const rate = simpleInt(5, 35);
   const coeff = 1 + rate / 100;
-  const reciprocal = (1 / coeff - 1) * 100;
-  const wrongs = [`-${rate} %`, `${rate} %`, `${Math.round(reciprocal / 2)} %`];
+  const reciprocal = roundTo((1 / coeff - 1) * 100);
+  const wrongs = [`-${rate} %`, `${rate} %`, `${roundTo(reciprocal / 2)} %`];
   return {
-    statement: `Après une hausse de ${rate}%, de combien doit-on faire varier pour revenir à l'initial ?`,
-    ...buildChoiceSet(`${Math.round(reciprocal)} %`, wrongs),
-    explanation: `Coeff retour = 1/${coeff.toFixed(2)} ⇒ taux ${Math.round(reciprocal)}%.`,
+    statement: `Après une hausse de ${rate}%, de combien doit-on faire varier pour revenir à l'initial ? (arrondir à 0,1%)`,
+    ...buildChoiceSet(`${reciprocal} %`, wrongs),
+    explanation: `Coeff retour = 1/${coeff.toFixed(2)} ⇒ taux ${reciprocal}% (arrondi à 0,1%).`,
   };
 }
 
@@ -1061,9 +1105,9 @@ function genDerivativeSignInterpretation() {
 function genImagePreimage() {
   const a = simpleInt(1, 5);
   const b = simpleInt(-5, 5);
-  const image = simpleInt(-4, 6);
-  const x = (image - b) / a;
-  const wrongs = [image * a + b, image + b, image - b];
+  const x = simpleInt(-4, 6);
+  const image = a * x + b;
+  const wrongs = [x + a, x - b, image - a];
   return {
     statement: `Pour h(x) = ${a}x ${b >= 0 ? '+ ' : '- '}${Math.abs(b)}, quel antécédent a pour image ${image} ?`,
     ...buildChoiceSet(`${x}`, wrongs.map((value) => `${value}`)),
@@ -1332,16 +1376,30 @@ function genQuartile() {
 }
 
 function genBoxPlotComparison() {
-  const medA = simpleInt(10, 15);
-  const medB = medA + simpleInt(-2, 3);
-  const spreadA = simpleInt(6, 12);
-  const spreadB = spreadA + simpleInt(-3, 5);
-  const correct = medA > medB ? 'La boîte A a une médiane plus grande.' : 'La boîte B a une médiane plus grande.';
-  const wrongs = ['Les deux médianes sont identiques.', 'On ne peut rien conclure.', 'La médiane la plus faible correspond à la plus grande dispersion.'];
+  const minA = simpleInt(2, 6);
+  const q1A = minA + simpleInt(2, 5);
+  const medianA = q1A + simpleInt(2, 5);
+  const q3A = medianA + simpleInt(2, 6);
+  const maxA = q3A + simpleInt(2, 6);
+
+  const minB = simpleInt(2, 6);
+  const q1B = minB + simpleInt(2, 5);
+  const medianB = q1B + simpleInt(2, 5);
+  const q3B = medianB + simpleInt(2, 6);
+  const maxB = q3B + simpleInt(2, 6);
+
+  const spreadA = q3A - q1A;
+  const spreadB = q3B - q1B;
+  const correct = medianA > medianB ? 'La boîte A a une médiane plus grande.' : 'La boîte B a une médiane plus grande.';
+  const wrongs = [
+    'Les deux médianes sont identiques.',
+    spreadA > spreadB ? 'La boîte B a une plus grande dispersion.' : 'La boîte A a une plus grande dispersion.',
+    'On ne peut rien conclure.',
+  ];
   return {
-    statement: `Deux boîtes à moustaches montrent les médianes ${medA} et ${medB} et les amplitudes interquartiles ${spreadA} et ${spreadB}. Que peut-on affirmer ?`,
+    statement: `Deux boîtes à moustaches (min, Q₁, médiane, Q₃, max) sont données : A = (${minA}, ${q1A}, ${medianA}, ${q3A}, ${maxA}) et B = (${minB}, ${q1B}, ${medianB}, ${q3B}, ${maxB}). Que peut-on affirmer ?`,
     ...buildChoiceSet(correct, wrongs),
-    explanation: `On lit les médianes (trait central) et les largeurs des boîtes pour comparer position et dispersion.`,
+    explanation: `On vérifie l'ordre min ≤ Q₁ ≤ médiane ≤ Q₃ ≤ max et on compare médianes (${medianA} vs ${medianB}) et amplitudes interquartiles (${spreadA} vs ${spreadB}).`,
   };
 }
 
@@ -1359,14 +1417,30 @@ function genDiagramReading() {
 }
 
 function genGraphToData() {
-  const total = simpleInt(40, 80);
-  const portion = simpleInt(5, 20);
-  const frequency = portion / total;
-  const wrongs = [`${portion}`, `${total - portion}`, `${(frequency * 50).toFixed(1)}%`];
+  let classes = [];
+  let total = 0;
+  do {
+    const first = simpleInt(8, 20);
+    const second = simpleInt(8, 20);
+    const third = simpleInt(8, 20);
+    total = first + second + third;
+    classes = [first, second, third];
+  } while (total < 45 || total > 90 || new Set(classes).size === 1);
+
+  const targetIndex = simpleInt(0, 2);
+  const portion = classes[targetIndex];
+  const frequency = roundTo(portion / total, 2).toFixed(2);
+  const alternateIndices = [0, 1, 2].filter((index) => index !== targetIndex && classes[index] !== portion);
+  const otherIndex = alternateIndices.length > 0 ? alternateIndices[0] : (targetIndex + 1) % 3;
+  const wrongs = [
+    roundTo(classes[otherIndex] / total, 2).toFixed(2),
+    (portion + 5).toString(),
+    (total - portion).toString(),
+  ];
   return {
-    statement: `Dans un histogramme représentant ${total} élèves, la classe 10-20 compte ${portion} élèves. Quelle fréquence associer à cette classe ?`,
-    ...buildChoiceSet(frequency.toFixed(2), wrongs.map((v) => (typeof v === 'string' ? v : `${v}`))),
-    explanation: `Fréquence = effectif/total = ${portion}/${total} = ${frequency.toFixed(2)}.`,
+    statement: `Un histogramme porte sur ${total} élèves répartis en trois classes d'effectifs ${classes.join(', ')}. Quelle fréquence associer à la classe n°${targetIndex + 1} ?`,
+    ...buildChoiceSet(frequency, wrongs),
+    explanation: `Effectif total ${total}, classe n°${targetIndex + 1} de ${portion} élèves ⇒ fréquence = ${portion}/${total} = ${frequency}.`,
   };
 }
 
@@ -1446,21 +1520,30 @@ const statisticsQuestions = [
 ];
 
 function genBagProbability() {
-  const red = simpleInt(2, 6);
-  const blue = simpleInt(2, 6);
+  let red = 0;
+  let blue = 0;
+  do {
+    red = simpleInt(2, 6);
+    blue = simpleInt(2, 6);
+  } while (red === blue);
   const total = red + blue;
-  const wrongs = [`${blue}/${total}`, `${red}/${blue}`, `${red + blue}`];
+  const correct = formatProbability(red / total);
+  const wrongs = [
+    formatProbability(blue / total),
+    formatProbability((red - 1) / (total - 1)),
+    formatProbability((blue + 2) / (total + 2)),
+  ];
   return {
     statement: `Un sac contient ${red} boules rouges et ${blue} bleues. Probabilité de tirer une rouge ?`,
-    ...buildChoiceSet(`${red}/${total}`, wrongs),
-    explanation: `p(rouge) = effectif favorable / total = ${red}/${total}.`,
+    ...buildChoiceSet(correct, wrongs),
+    explanation: `p(rouge) = effectif favorable / total = ${red}/${total} = ${correct}.`,
   };
 }
 
 function genComplementaryEvent() {
   const prob = simpleInt(10, 70) / 100;
-  const complement = (1 - prob).toFixed(2);
-  const wrongs = [prob.toFixed(2), (prob * prob).toFixed(2), (prob + 0.2).toFixed(2)];
+  const complement = formatProbability(1 - prob);
+  const wrongs = [formatProbability(prob), formatProbability(prob * prob), formatProbability(Math.max(0, Math.min(1, prob + 0.15)))];
   return {
     statement: `P(A) = ${prob.toFixed(2)}. Quelle est la probabilité de l'événement contraire ?`,
     ...buildChoiceSet(complement, wrongs),
@@ -1471,8 +1554,8 @@ function genComplementaryEvent() {
 function genIndependentEvents() {
   const a = simpleInt(2, 5) / 10;
   const b = simpleInt(2, 5) / 10;
-  const product = (a * b).toFixed(2);
-  const wrongs = [a.toFixed(2), b.toFixed(2), (a + b).toFixed(2)];
+  const product = formatProbability(a * b);
+  const wrongs = [formatProbability(a), formatProbability(b), formatProbability(Math.min(1, a + b))];
   return {
     statement: `Deux événements indépendants vérifient P(A) = ${a.toFixed(2)} et P(B) = ${b.toFixed(2)}. Quelle est P(A ∩ B) ?`,
     ...buildChoiceSet(product, wrongs),
@@ -1484,8 +1567,8 @@ function genTreeProbability() {
   const pA = simpleInt(2, 8) / 10;
   const pBgivenA = simpleInt(3, 8) / 10;
   const pBgivenNotA = simpleInt(1, 6) / 10;
-  const prob = (pA * pBgivenA + (1 - pA) * pBgivenNotA).toFixed(2);
-  const wrongs = [pBgivenA.toFixed(2), pA.toFixed(2), pBgivenNotA.toFixed(2)];
+  const prob = formatProbability(pA * pBgivenA + (1 - pA) * pBgivenNotA);
+  const wrongs = [formatProbability(pBgivenA), formatProbability(pA), formatProbability(pBgivenNotA)];
   return {
     statement: `Dans un arbre pondéré, P(A) = ${pA.toFixed(2)}, P(B|A) = ${pBgivenA.toFixed(2)} et P(B|Ā) = ${pBgivenNotA.toFixed(
       2,
@@ -1497,10 +1580,10 @@ function genTreeProbability() {
 
 function genConditionalFromTable() {
   const total = simpleInt(80, 120);
-  const row = simpleInt(30, 60);
+  const row = simpleInt(30, Math.min(60, total - 10));
   const success = simpleInt(10, row - 5);
-  const prob = (success / row).toFixed(2);
-  const wrongs = [(success / total).toFixed(2), (row / total).toFixed(2), (1 - success / row).toFixed(2)];
+  const prob = formatProbability(success / row);
+  const wrongs = [formatProbability(success / total), formatProbability(row / total), formatProbability(1 - success / row)];
   return {
     statement: `Dans un tableau croisé, ${row} élèves suivent l'option A dont ${success} réussissent. Quelle est P(Réussite | A) ?`,
     ...buildChoiceSet(prob, wrongs),
@@ -1511,8 +1594,12 @@ function genConditionalFromTable() {
 function genSumEvent() {
   const die = simpleInt(4, 6);
   const sought = simpleInt(2, die);
-  const prob = (1 / die).toFixed(2);
-  const wrongs = [(1 / (die - 1)).toFixed(2), `${sought}/${die}`, `${die}/${sought}`];
+  const prob = formatProbability(1 / die);
+  const wrongs = [
+    formatProbability(1 / (die - 1)),
+    formatProbability((sought + 1) / (die + 1)),
+    formatProbability(Math.max(0, Math.min(1, (die - sought + 1) / die))),
+  ];
   return {
     statement: `On lance un dé ${die}-faces équilibré. Probabilité d'obtenir ${sought} ?`,
     ...buildChoiceSet(prob, wrongs),
@@ -1521,9 +1608,12 @@ function genSumEvent() {
 }
 
 function genEventBySum() {
-  const probs = [simpleInt(1, 4) / 10, simpleInt(1, 4) / 10, simpleInt(1, 4) / 10];
+  let probs = [];
+  do {
+    probs = [simpleInt(1, 3) / 10, simpleInt(1, 3) / 10, simpleInt(1, 3) / 10];
+  } while (probs.reduce((acc, value) => acc + value, 0) >= 0.95);
   const totalAssigned = probs.reduce((acc, value) => acc + value, 0);
-  const remaining = Math.max(0, 1 - totalAssigned);
+  const remaining = roundTo(1 - totalAssigned, 2);
   const options = ['A', 'B', 'C', 'D'];
   const listed = probs.map((prob, index) => `${options[index]} : ${prob.toFixed(2)}`);
   listed.push(`${options[3]} : ${remaining.toFixed(2)}`);
@@ -1531,11 +1621,11 @@ function genEventBySum() {
   const statement = `On considère quatre issues avec probabilités ${listed.join(', ')}. Quelle est la probabilité de l'événement « ${
     options[targetIndices[0]]
   } ou ${options[targetIndices[1]]} » ?`;
-  const prob = (probs[targetIndices[0]] + probs[targetIndices[1]]).toFixed(2);
+  const prob = formatProbability(probs[targetIndices[0]] + probs[targetIndices[1]]);
   const wrongs = [
-    probs[targetIndices[0]].toFixed(2),
-    probs[targetIndices[1]].toFixed(2),
-    (1 - prob).toFixed(2),
+    formatProbability(probs[targetIndices[0]]),
+    formatProbability(probs[targetIndices[1]]),
+    formatProbability(Math.max(0, 1 - Number.parseFloat(prob))),
   ];
   return {
     statement,
@@ -1545,13 +1635,20 @@ function genEventBySum() {
 }
 
 function genConditionalFromTree() {
-  const pA = simpleInt(2, 9) / 10;
-  const pBgivenA = simpleInt(2, 9) / 10;
-  const pBgivenNotA = simpleInt(2, 9) / 10;
+  let pA = simpleInt(2, 9) / 10;
+  let pBgivenA = simpleInt(2, 9) / 10;
+  let pBgivenNotA = simpleInt(2, 9) / 10;
+  let denominator = 0;
+  while (denominator === 0) {
+    pA = simpleInt(2, 9) / 10;
+    pBgivenA = simpleInt(2, 9) / 10;
+    pBgivenNotA = simpleInt(2, 9) / 10;
+    const numerator = pA * pBgivenA;
+    denominator = numerator + (1 - pA) * pBgivenNotA;
+  }
   const numerator = pA * pBgivenA;
-  const denominator = numerator + (1 - pA) * pBgivenNotA;
-  const prob = (numerator / denominator).toFixed(2);
-  const wrongs = [pBgivenA.toFixed(2), pA.toFixed(2), (1 - prob).toFixed(2)];
+  const prob = formatProbability(numerator / denominator);
+  const wrongs = [formatProbability(pBgivenA), formatProbability(pA), formatProbability(Math.max(0, 1 - Number.parseFloat(prob)))];
   return {
     statement: `On sait que P(A) = ${pA.toFixed(2)}, P(B|A) = ${pBgivenA.toFixed(2)} et P(B|Ā) = ${pBgivenNotA.toFixed(2)}. Quelle est P(A|B) ?`,
     ...buildChoiceSet(prob, wrongs),
@@ -1573,11 +1670,11 @@ function genBinomialProbability() {
   const n = simpleInt(3, 6);
   const k = simpleInt(1, n - 1);
   const p = simpleInt(2, 8) / 10;
-  const probability = (binomialCoefficient(n, k) * p ** k * (1 - p) ** (n - k)).toFixed(3);
+  const probability = formatProbability(binomialCoefficient(n, k) * p ** k * (1 - p) ** (n - k), 3);
   const wrongs = [
-    p.toFixed(3),
-    (p ** k).toFixed(3),
-    ((1 - p) ** (n - k)).toFixed(3),
+    formatProbability(p, 3),
+    formatProbability(p ** k, 3),
+    formatProbability((1 - p) ** (n - k), 3),
   ];
   return {
     statement: `Soit X ~ B(${n} ; ${p.toFixed(1)}). Calculer P(X = ${k}).`,
@@ -1635,7 +1732,21 @@ export function buildQuestionSet(theme, count = 10) {
       pool.push(generator);
       generator = pool.shift();
     }
-    questions.push(generator());
+    let question = null;
+    let attempts = 0;
+    while (!question && attempts < 12) {
+      try {
+        const candidate = generator();
+        validate(candidate.choices[candidate.correctIndex], candidate.choices);
+        question = candidate;
+      } catch (error) {
+        attempts += 1;
+      }
+    }
+    if (!question) {
+      throw new Error('Impossible de générer une question cohérente après plusieurs tentatives');
+    }
+    questions.push(question);
     lastGenerator = generator;
   }
   return questions;
