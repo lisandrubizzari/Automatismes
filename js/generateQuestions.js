@@ -1,14 +1,16 @@
-import { randInt, shuffle, buildChoiceSet, formatSigned } from './utils.js';
+import {
+  pickSimpleInteger as simpleInt,
+  shuffle,
+  buildChoiceSet,
+  formatSigned,
+  simplifyFraction,
+  simplifySqrt,
+  formatExponent,
+} from './utils.js';
 
 const DECIMALS = { minimumFractionDigits: 0, maximumFractionDigits: 2 };
 
 const formatNumber = (value, options = DECIMALS) => value.toLocaleString('fr-FR', options);
-
-function simplifyFraction(num, den) {
-  const gcd = (a, b) => (b === 0 ? Math.abs(a) : gcd(b, a % b));
-  const divisor = gcd(num, den);
-  return { numerator: num / divisor, denominator: den / divisor };
-}
 
 function binomialCoefficient(n, k) {
   let numerator = 1;
@@ -21,7 +23,7 @@ function binomialCoefficient(n, k) {
 }
 
 function randomItem(list) {
-  return list[randInt(0, list.length - 1)];
+  return list[simpleInt(0, list.length - 1)];
 }
 
 function createLineGraph(a, b) {
@@ -62,9 +64,9 @@ function createLineGraph(a, b) {
 }
 
 function genLinearEquation() {
-  const a = randInt(2, 9);
-  const x = randInt(-5, 5);
-  const b = randInt(-10, 10);
+  const a = simpleInt(2, 9);
+  const x = simpleInt(-5, 5);
+  const b = simpleInt(-10, 10);
   const c = a * x + b;
   const statement = `Résoudre ${a}x ${b >= 0 ? '+ ' : '- '}${Math.abs(b)} = ${c}.`;
   const correct = `${x}`;
@@ -77,10 +79,10 @@ function genLinearEquation() {
 }
 
 function genFractionSum() {
-  const q1 = randInt(2, 9);
-  const q2 = randInt(2, 9);
-  const n1 = randInt(1, q1 - 1);
-  const n2 = randInt(1, q2 - 1);
+  const q1 = simpleInt(2, 9);
+  const q2 = simpleInt(2, 9);
+  const n1 = simpleInt(1, q1 - 1);
+  const n2 = simpleInt(1, q2 - 1);
   const numerator = n1 * q2 + n2 * q1;
   const denominator = q1 * q2;
   const simplified = simplifyFraction(numerator, denominator);
@@ -98,24 +100,34 @@ function genFractionSum() {
 }
 
 function genPowerRule() {
-  const base = randInt(2, 9);
-  const m = randInt(1, 5);
-  const n = randInt(1, 5);
-  const correct = `${base}^${m + n}`;
-  const wrongs = [`${base}^${m * n}`, `${base}^${Math.abs(m - n)}`, `${base + m}^${n}`];
+  const allowedBases = [2, 3, 4, 5, 10];
+  const base = randomItem(allowedBases);
+  let m = simpleInt(1, 2);
+  let n = simpleInt(1, 2);
+  while (m + n > 3) {
+    m = simpleInt(1, 2);
+    n = simpleInt(1, 2);
+  }
+  const correctExponent = m + n;
+  const correct = formatExponent(base, correctExponent);
+  const wrongs = [
+    formatExponent(base, m * n > 3 ? 3 : m * n),
+    formatExponent(base, Math.max(1, Math.abs(m - n))),
+    formatExponent(base + m > 10 ? base : base + m, n),
+  ];
   return {
-    statement: `Simplifier ${base}^${m} × ${base}^${n}.`,
+    statement: `Simplifier ${formatExponent(base, m)} × ${formatExponent(base, n)}.`,
     ...buildChoiceSet(correct, wrongs),
-    explanation: `Même base ⇒ on additionne les exposants : ${m} + ${n} = ${m + n}.`,
+    explanation: `Même base ⇒ on additionne les exposants : ${m} + ${n} = ${correctExponent}.`,
   };
 }
 
 function genMentalMath() {
-  const a = randInt(20, 80);
-  const b = randInt(5, 30);
+  const a = simpleInt(20, 80);
+  const b = simpleInt(5, 30);
   const sign = Math.random() < 0.5 ? '+' : '-';
   const result = sign === '+' ? a + b : a - b;
-  const wrongs = [result + randInt(-5, 5), result + randInt(6, 12), result - randInt(6, 12)];
+  const wrongs = [result + simpleInt(-5, 5), result + simpleInt(6, 12), result - simpleInt(6, 12)];
   return {
     statement: `Calculer mentalement ${a} ${sign} ${b}.`,
     ...buildChoiceSet(`${result}`, wrongs.map((value) => `${value}`)),
@@ -124,8 +136,8 @@ function genMentalMath() {
 }
 
 function genCompareNumbers() {
-  const a = randInt(-20, 40) / 2;
-  const b = randInt(-20, 40) / 2;
+  const a = simpleInt(-20, 40) / 2;
+  const b = simpleInt(-20, 40) / 2;
   const comparisons = [`${a} > ${b}`, `${a} < ${b}`, `${a} = ${b}`];
   let correct = `${a} = ${b}`;
   if (a > b) {
@@ -144,10 +156,10 @@ function genCompareNumbers() {
 function genCompareViaComputation() {
   const useDifference = Math.random() < 0.5;
   if (useDifference) {
-    const a1 = randInt(20, 90) / 2;
-    const b1 = randInt(5, 40) / 2;
-    const a2 = randInt(10, 80) / 2;
-    const b2 = randInt(5, 35) / 2;
+    const a1 = simpleInt(20, 90) / 2;
+    const b1 = simpleInt(5, 40) / 2;
+    const a2 = simpleInt(10, 80) / 2;
+    const b2 = simpleInt(5, 35) / 2;
     const valueLeft = a1 - b1;
     const valueRight = a2 - b2;
     const leftExpr = `${formatNumber(a1)} - ${formatNumber(b1)}`;
@@ -171,10 +183,10 @@ function genCompareViaComputation() {
       )} ⇒ ${correct}.`,
     };
   }
-  const numerator1 = randInt(8, 24);
-  const denominator1 = randInt(2, 8);
-  const numerator2 = randInt(8, 24);
-  const denominator2 = randInt(2, 8);
+  const numerator1 = simpleInt(8, 24);
+  const denominator1 = simpleInt(2, 8);
+  const numerator2 = simpleInt(8, 24);
+  const denominator2 = simpleInt(2, 8);
   const valueLeft = numerator1 / denominator1;
   const valueRight = numerator2 / denominator2;
   const leftExpr = `${formatNumber(numerator1)} ÷ ${formatNumber(denominator1)}`;
@@ -201,7 +213,7 @@ function genCompareViaComputation() {
 
 function genDecimalFractionConversion() {
   const denominator = randomItem([4, 5, 8, 10, 20, 25]);
-  const numerator = randInt(1, denominator - 1);
+  const numerator = simpleInt(1, denominator - 1);
   const value = numerator / denominator;
   const simplified = simplifyFraction(numerator, denominator);
   const percent = (value * 100).toFixed(1).replace('.', ',');
@@ -215,7 +227,7 @@ function genDecimalFractionConversion() {
 }
 
 function genPercentToDecimal() {
-  const percent = randInt(5, 95);
+  const percent = simpleInt(5, 95);
   const value = percent / 100;
   const fraction = simplifyFraction(percent, 100);
   const correct = `${value.toString().replace('.', ',')}`;
@@ -228,10 +240,10 @@ function genPercentToDecimal() {
 }
 
 function genFractionOperations() {
-  const denominator1 = randInt(2, 9);
-  const denominator2 = randInt(2, 9);
-  const numerator1 = randInt(1, denominator1 - 1);
-  const numerator2 = randInt(1, denominator2 - 1);
+  const denominator1 = simpleInt(2, 9);
+  const denominator2 = simpleInt(2, 9);
+  const numerator1 = simpleInt(1, denominator1 - 1);
+  const numerator2 = simpleInt(1, denominator2 - 1);
   const op = randomItem(['sub', 'mul', 'div', 'compare']);
   if (op === 'compare') {
     const left = numerator1 / denominator1;
@@ -288,8 +300,8 @@ function genFractionOperations() {
 }
 
 function genOrderOfMagnitude() {
-  const a = randInt(12, 98);
-  const b = randInt(12, 98);
+  const a = simpleInt(12, 98);
+  const b = simpleInt(12, 98);
   const product = a * b;
   const power = Math.pow(10, Math.floor(Math.log10(product)));
   const approx = Math.round(product / power) * power;
@@ -302,8 +314,8 @@ function genOrderOfMagnitude() {
 }
 
 function genPlausibilityCheck() {
-  const distance = randInt(60, 400);
-  const duration = randInt(1, 5);
+  const distance = simpleInt(60, 400);
+  const duration = simpleInt(1, 5);
   const trueSpeed = distance / duration;
   const plausible = Math.random() < 0.5;
   const displayedSpeed = plausible ? trueSpeed : trueSpeed * randomItem([0.1, 10]);
@@ -334,7 +346,7 @@ function genUnitConversionLength() {
   while (to.unit === from.unit) {
     to = randomItem(units);
   }
-  const value = randInt(2, 200);
+  const value = simpleInt(2, 200);
   const meters = value * from.factor;
   const converted = meters / to.factor;
   const wrongs = [converted * 10, converted / 10, meters];
@@ -358,7 +370,7 @@ function genUnitConversionArea() {
   while (to.unit === from.unit) {
     to = randomItem(units);
   }
-  const value = randInt(1, 25);
+  const value = simpleInt(1, 25);
   const base = value * from.factor;
   const converted = base / to.factor;
   const wrongs = [converted * 100, converted / 100, base];
@@ -370,7 +382,7 @@ function genUnitConversionArea() {
 }
 
 function genUnitConversionSpeed() {
-  const speed = randInt(30, 120);
+  const speed = simpleInt(30, 120);
   const converted = (speed * 1000) / 3600;
   const wrongs = [speed / 3.6, converted * 10, converted / 10];
   return {
@@ -391,7 +403,7 @@ function genUnitConversionVolume() {
   while (to.unit === from.unit) {
     to = randomItem(units);
   }
-  const value = randInt(2, 40);
+  const value = simpleInt(2, 40);
   const base = value * from.factor;
   const converted = base / to.factor;
   const wrongs = [converted * 1000, converted / 1000, base];
@@ -415,7 +427,7 @@ function genUnitConversionCapacity() {
   while (to.unit === from.unit) {
     to = randomItem(units);
   }
-  const value = randInt(5, 150);
+  const value = simpleInt(5, 150);
   const base = value * from.factor;
   const converted = base / to.factor;
   const wrongs = [converted * 10, converted / 10, base];
@@ -437,7 +449,7 @@ function genUnitConversionDuration() {
   while (to.unit === from.unit) {
     to = randomItem(units);
   }
-  const value = randInt(1, 180);
+  const value = simpleInt(1, 180);
   const seconds = value * from.factor;
   const converted = seconds / to.factor;
   const wrongs = [converted * 60, converted / 60, seconds];
@@ -460,7 +472,7 @@ function genUnitConversionMass() {
   while (to.unit === from.unit) {
     to = randomItem(units);
   }
-  const value = randInt(2, 500);
+  const value = simpleInt(2, 500);
   const base = value * from.factor;
   const converted = base / to.factor;
   const wrongs = [converted * 1000, converted / 1000, base];
@@ -472,8 +484,8 @@ function genUnitConversionMass() {
 }
 
 function genZeroProductEquation() {
-  const a = randInt(-6, 6) || 2;
-  const b = randInt(-6, 6) || -3;
+  const a = simpleInt(-6, 6) || 2;
+  const b = simpleInt(-6, 6) || -3;
   const statement = `Résoudre (${a >= 0 ? 'x - ' + a : 'x + ' + Math.abs(a)})(${b >= 0 ? 'x - ' + b : 'x + ' + Math.abs(b)}) = 0.`;
   const roots = [`x = ${a}`, `x = ${b}`];
   const correct = roots.join(' ou ');
@@ -512,8 +524,8 @@ function genIsolateVariable() {
 }
 
 function genFormulaApplication() {
-  const base = randInt(6, 20);
-  const height = randInt(4, 12);
+  const base = simpleInt(6, 20);
+  const height = simpleInt(4, 12);
   const area = (base * height) / 2;
   const wrongs = [base * height, (base + height) / 2, base + height];
   return {
@@ -524,7 +536,7 @@ function genFormulaApplication() {
 }
 
 function genSquareEquation() {
-  const value = randInt(2, 8);
+  const value = simpleInt(2, 8);
   const square = value * value;
   return {
     statement: `Résoudre x² = ${square}.`,
@@ -534,8 +546,8 @@ function genSquareEquation() {
 }
 
 function genRationalEquation() {
-  const a = randInt(6, 30);
-  const b = randInt(2, 6);
+  const a = simpleInt(6, 30);
+  const b = simpleInt(2, 6);
   return {
     statement: `Résoudre ${a}/x = ${b}.`,
     ...buildChoiceSet(`x = ${a / b}`, [`x = ${a * b}`, `x = ${b / a}`, `x = ${a - b}`]),
@@ -544,7 +556,7 @@ function genRationalEquation() {
 }
 
 function genDevelopIdentity() {
-  const a = randInt(2, 6);
+  const a = simpleInt(2, 6);
   const identity = randomItem([
     { expr: `(x + ${a})²`, expanded: `x² + ${2 * a}x + ${a * a}` },
     { expr: `(x - ${a})²`, expanded: `x² - ${2 * a}x + ${a * a}` },
@@ -563,8 +575,8 @@ function genDevelopIdentity() {
 }
 
 function genLiteralSigns() {
-  const a = randInt(2, 9);
-  const b = randInt(1, 8);
+  const a = simpleInt(2, 9);
+  const b = simpleInt(1, 8);
   const scenarios = [
     {
       statement: `Simplifier -(x + ${a}).`,
@@ -596,8 +608,8 @@ function genLiteralSigns() {
 }
 
 function genFactorizeCommonTerm() {
-  const a = randInt(2, 8);
-  const b = randInt(2, 8);
+  const a = simpleInt(2, 8);
+  const b = simpleInt(2, 8);
   const useSquare = Math.random() < 0.5;
   const expression = useSquare
     ? `${a}x² + ${b}x`
@@ -614,8 +626,8 @@ function genFactorizeCommonTerm() {
 }
 
 function genFactorizeQuadratic() {
-  const root1 = randInt(-5, 5) || 1;
-  const root2 = randInt(-5, 5) || -2;
+  const root1 = simpleInt(-5, 5) || 1;
+  const root2 = simpleInt(-5, 5) || -2;
   const b = -(root1 + root2);
   const c = root1 * root2;
   const expression = `x² ${formatSigned(b)}x ${formatSigned(c)}`;
@@ -633,9 +645,9 @@ function genFactorizeQuadratic() {
 }
 
 function genLinearInequality() {
-  const a = randInt(-6, 6) || -3;
-  const b = randInt(-8, 8);
-  const c = randInt(-6, 10);
+  const a = simpleInt(-6, 6) || -3;
+  const b = simpleInt(-8, 8);
+  const c = simpleInt(-6, 10);
   const inequality = randomItem(['<', '>']);
   const rhs = c - b;
   const rawSolution = rhs / a;
@@ -658,8 +670,8 @@ function genLinearInequality() {
 }
 
 function genSignFirstDegree() {
-  const slope = randInt(-5, 5) || 2;
-  const intercept = randInt(-6, 6);
+  const slope = simpleInt(-5, 5) || 2;
+  const intercept = simpleInt(-6, 6);
   const root = -intercept / slope;
   const statement = `Donner le signe de f(x) = ${slope}x ${formatSigned(intercept)}.`;
   const correct =
@@ -713,10 +725,10 @@ const calculQuestions = [
 ];
 
 function genPercentOfValue() {
-  const base = randInt(80, 350);
-  const rate = randInt(5, 40);
+  const base = simpleInt(80, 350);
+  const rate = simpleInt(5, 40);
   const result = Math.round((rate / 100) * base);
-  const wrongs = [result + randInt(5, 25), Math.round(base / rate), Math.round(base * (1 + rate / 100))];
+  const wrongs = [result + simpleInt(5, 25), Math.round(base / rate), Math.round(base * (1 + rate / 100))];
   return {
     statement: `Combien vaut ${rate}% de ${base} ?`,
     ...buildChoiceSet(`${result}`, wrongs.map((v) => `${v}`)),
@@ -725,8 +737,8 @@ function genPercentOfValue() {
 }
 
 function genUnitRate() {
-  const quantity = randInt(3, 8);
-  const price = randInt(6, 20);
+  const quantity = simpleInt(3, 8);
+  const price = simpleInt(6, 20);
   const total = quantity * price;
   const wrongs = [`${price}`, `${total / (quantity + 1)}`, `${total}`];
   return {
@@ -737,9 +749,9 @@ function genUnitRate() {
 }
 
 function genScaleRecipe() {
-  const persons = randInt(2, 6);
-  const amount = randInt(200, 500);
-  const target = persons + randInt(2, 4);
+  const persons = simpleInt(2, 6);
+  const amount = simpleInt(200, 500);
+  const target = persons + simpleInt(2, 4);
   const perPerson = amount / persons;
   const correct = Math.round(perPerson * target);
   const wrongs = [amount + (target - persons) * 10, amount, amount * target];
@@ -751,7 +763,7 @@ function genScaleRecipe() {
 }
 
 function genCoefficientMultiplicateur() {
-  const rate = randInt(3, 25);
+  const rate = simpleInt(3, 25);
   const coeff = (100 + rate) / 100;
   const wrongs = [rate / 100, 1 - rate / 100, rate];
   return {
@@ -762,8 +774,8 @@ function genCoefficientMultiplicateur() {
 }
 
 function genExpressProportion() {
-  const total = randInt(40, 90);
-  const part = randInt(5, total - 5);
+  const total = simpleInt(40, 90);
+  const part = simpleInt(5, total - 5);
   const fraction = simplifyFraction(part, total);
   const percent = ((part / total) * 100).toFixed(1);
   const correct = `${percent}%`;
@@ -776,8 +788,8 @@ function genExpressProportion() {
 }
 
 function genFindWholeFromPart() {
-  const rate = randInt(10, 60);
-  const part = randInt(20, 150);
+  const rate = simpleInt(10, 60);
+  const part = simpleInt(20, 150);
   const total = Math.round((part * 100) / rate);
   const wrongs = [part + rate, part * rate, Math.round(part / (rate / 100 + 1))];
   return {
@@ -788,10 +800,10 @@ function genFindWholeFromPart() {
 }
 
 function genTableProportion() {
-  const x1 = randInt(2, 8);
-  const y1 = randInt(10, 40);
+  const x1 = simpleInt(2, 8);
+  const y1 = simpleInt(10, 40);
   const ratio = y1 / x1;
-  const x2 = randInt(5, 12);
+  const x2 = simpleInt(5, 12);
   const y2 = Math.round(x2 * ratio);
   const wrongs = [x2 + y1, y1, Math.round(y2 / 2)];
   return {
@@ -802,11 +814,11 @@ function genTableProportion() {
 }
 
 function genRatioComparison() {
-  const juice = randInt(1, 4);
-  const water = randInt(2, 6);
+  const juice = simpleInt(1, 4);
+  const water = simpleInt(2, 6);
   const mixA = juice / water;
-  const juiceB = juice + randInt(1, 3);
-  const waterB = water + randInt(1, 3);
+  const juiceB = juice + simpleInt(1, 3);
+  const waterB = water + simpleInt(1, 3);
   const mixB = juiceB / waterB;
   const correct = mixA > mixB ? 'Mélange A' : 'Mélange B';
   const wrongs = ['Mélange C (impossible)', 'Les deux identiques', mixA > mixB ? 'Mélange B' : 'Mélange A'];
@@ -829,7 +841,7 @@ const proportionQuestions = [
 ];
 
 function genAdditiveToMultiplicative() {
-  const rate = randInt(2, 30);
+  const rate = simpleInt(2, 30);
   const increase = Math.random() < 0.5;
   const coeff = increase ? 1 + rate / 100 : 1 - rate / 100;
   const correct = `Multiplier par ${coeff.toFixed(2)}`;
@@ -846,8 +858,8 @@ function genAdditiveToMultiplicative() {
 }
 
 function genFinalValue() {
-  const initial = randInt(120, 900);
-  const rate = randInt(5, 35);
+  const initial = simpleInt(120, 900);
+  const rate = simpleInt(5, 35);
   const coeff = 1 + rate / 100;
   const final = Math.round(initial * coeff);
   const wrongs = [`${initial}`, `${initial + rate}`, `${Math.round(initial * (1 - rate / 100))}`];
@@ -859,8 +871,8 @@ function genFinalValue() {
 }
 
 function genInitialValue() {
-  const initial = randInt(150, 700);
-  const rate = randInt(5, 30);
+  const initial = simpleInt(150, 700);
+  const rate = simpleInt(5, 30);
   const coeff = 1 + rate / 100;
   const final = Math.round(initial * coeff);
   const wrongs = [`${final}`, `${final - rate}`, `${Math.round(final / (1 - rate / 100))}`];
@@ -872,11 +884,11 @@ function genInitialValue() {
 }
 
 function genSuccessiveRates() {
-  const a = randInt(-20, 30);
-  const b = randInt(-20, 30);
+  const a = simpleInt(-20, 30);
+  const b = simpleInt(-20, 30);
   const coeff = (1 + a / 100) * (1 + b / 100);
   const rate = Math.round((coeff - 1) * 100);
-  const wrongs = [`${a + b} %`, `${a * b} %`, `${rate + randInt(-6, 6)} %`];
+  const wrongs = [`${a + b} %`, `${a * b} %`, `${rate + simpleInt(-6, 6)} %`];
   return {
     statement: `On applique successivement ${a}% puis ${b}%. Quel est le taux global ?`,
     ...buildChoiceSet(`${rate} %`, wrongs),
@@ -885,7 +897,7 @@ function genSuccessiveRates() {
 }
 
 function genReciprocal() {
-  const rate = randInt(5, 35);
+  const rate = simpleInt(5, 35);
   const coeff = 1 + rate / 100;
   const reciprocal = (1 / coeff - 1) * 100;
   const wrongs = [`-${rate} %`, `${rate} %`, `${Math.round(reciprocal / 2)} %`];
@@ -897,8 +909,8 @@ function genReciprocal() {
 }
 
 function genRateFromValues() {
-  const initial = randInt(80, 220);
-  const final = randInt(80, 220);
+  const initial = simpleInt(80, 220);
+  const final = simpleInt(80, 220);
   const rate = ((final - initial) / initial) * 100;
   const wrongs = [`${final - initial}`, `${initial / final} %`, `${Math.abs(initial - final)} %`];
   return {
@@ -909,10 +921,10 @@ function genRateFromValues() {
 }
 
 function genMultipleVariations() {
-  const rates = [randInt(-15, 20), randInt(-15, 20), randInt(-15, 20)];
+  const rates = [simpleInt(-15, 20), simpleInt(-15, 20), simpleInt(-15, 20)];
   const coeff = rates.reduce((acc, r) => acc * (1 + r / 100), 1);
   const rate = Math.round((coeff - 1) * 100);
-  const wrongs = [`${rates.reduce((a, b) => a + b, 0)} %`, `${Math.max(...rates)} %`, `${rate + randInt(-5, 5)} %`];
+  const wrongs = [`${rates.reduce((a, b) => a + b, 0)} %`, `${Math.max(...rates)} %`, `${rate + simpleInt(-5, 5)} %`];
   return {
     statement: `On applique successivement ${rates.map((r) => `${r}%`).join(', ')}. Quel est le taux global ?`,
     ...buildChoiceSet(`${rate} %`, wrongs),
@@ -921,9 +933,9 @@ function genMultipleVariations() {
 }
 
 function genValueAfterMixedVariations() {
-  const initial = randInt(200, 600);
-  const rateA = randInt(-20, 20);
-  const rateB = randInt(-20, 20);
+  const initial = simpleInt(200, 600);
+  const rateA = simpleInt(-20, 20);
+  const rateB = simpleInt(-20, 20);
   const final = Math.round(initial * (1 + rateA / 100) * (1 + rateB / 100));
   const wrongs = [`${initial + rateA + rateB}`, `${Math.round(initial * (1 + (rateA + rateB) / 100))}`, `${initial}`];
   return {
@@ -934,9 +946,9 @@ function genValueAfterMixedVariations() {
 }
 
 function genInitialAfterDecrease() {
-  const rate = randInt(5, 30);
+  const rate = simpleInt(5, 30);
   const coeff = 1 - rate / 100;
-  const initial = randInt(200, 800);
+  const initial = simpleInt(200, 800);
   const final = Math.round(initial * coeff);
   const wrongs = [`${final}`, `${final + rate}`, `${Math.round(initial * (1 + rate / 100))}`];
   return {
@@ -947,10 +959,10 @@ function genInitialAfterDecrease() {
 }
 
 function genIndiceBase() {
-  const baseYear = randInt(2018, 2022);
-  const baseValue = randInt(80, 140);
-  const rate = randInt(-15, 30);
-  const currentYear = baseYear + randInt(1, 3);
+  const baseYear = simpleInt(2018, 2022);
+  const baseValue = simpleInt(80, 140);
+  const rate = simpleInt(-15, 30);
+  const currentYear = baseYear + simpleInt(1, 3);
   const currentValue = Math.round(baseValue * (1 + rate / 100));
   const index = Math.round((currentValue / baseValue) * 100);
   const wrongs = [`${100 + rate}`, `${currentValue}`, `${Math.round((baseValue / currentValue) * 100)}`];
@@ -975,9 +987,9 @@ const evolutionQuestions = [
 ];
 
 function genEvaluateLinearFunction() {
-  const a = randInt(-5, 6);
-  const b = randInt(-8, 8);
-  const x = randInt(-4, 4);
+  const a = simpleInt(-5, 6);
+  const b = simpleInt(-8, 8);
+  const x = simpleInt(-4, 4);
   const result = a * x + b;
   const wrongs = [a + b + x, a * (x + 1) + b, a * x - b];
   return {
@@ -988,10 +1000,10 @@ function genEvaluateLinearFunction() {
 }
 
 function genSlopeFromTable() {
-  const x1 = randInt(0, 4);
-  const x2 = x1 + randInt(1, 4);
-  const slope = randInt(-3, 5) || 1;
-  const y1 = randInt(-5, 5);
+  const x1 = simpleInt(0, 4);
+  const x2 = x1 + simpleInt(1, 4);
+  const slope = simpleInt(-3, 5) || 1;
+  const y1 = simpleInt(-5, 5);
   const y2 = y1 + slope * (x2 - x1);
   const wrongs = [`${y2 - y1 + 1}`, `${(y2 + y1) / 2}`, `${y2 / (x2 + 1)}`];
   return {
@@ -1002,7 +1014,7 @@ function genSlopeFromTable() {
 }
 
 function genFunctionVariation() {
-  const slope = randInt(-4, 4) || 2;
+  const slope = simpleInt(-4, 4) || 2;
   const statement = `La fonction affine g a pour coefficient directeur ${slope}. Comment varie-t-elle ?`;
   const correct = slope > 0 ? 'g est croissante sur ℝ.' : 'g est décroissante sur ℝ.';
   const wrongs = ['g est constante.', 'g alterne croissance et décroissance.', 'Impossible à déterminer.'];
@@ -1016,9 +1028,9 @@ function genFunctionVariation() {
 }
 
 function genVariationTableReading() {
-  const left = randInt(-4, -1);
-  const pivot = randInt(0, 2);
-  const right = pivot + randInt(2, 4);
+  const left = simpleInt(-4, -1);
+  const pivot = simpleInt(0, 2);
+  const right = pivot + simpleInt(2, 4);
   const statement = `Une fonction f est croissante sur [${left} ; ${pivot}] puis décroissante sur [${pivot} ; ${right}]. Que peut-on affirmer ?`;
   const correct = `f admet un maximum en x = ${pivot}.`;
   const wrongs = ['f est décroissante partout.', `f admet un minimum en x = ${pivot}.`, `f est croissante sur [${pivot} ; ${right}].`];
@@ -1030,8 +1042,8 @@ function genVariationTableReading() {
 }
 
 function genDerivativeSignInterpretation() {
-  const pivot = randInt(-1, 3);
-  const intervalLength = randInt(2, 4);
+  const pivot = simpleInt(-1, 3);
+  const intervalLength = simpleInt(2, 4);
   const leftBound = pivot - intervalLength;
   const rightBound = pivot + intervalLength;
   const statement = `On sait que f'(x) > 0 pour x ∈ (${leftBound} ; ${pivot}) et f'(x) < 0 pour x ∈ (${pivot} ; ${rightBound}). Quelle conclusion ?`;
@@ -1047,9 +1059,9 @@ function genDerivativeSignInterpretation() {
 }
 
 function genImagePreimage() {
-  const a = randInt(1, 5);
-  const b = randInt(-5, 5);
-  const image = randInt(-4, 6);
+  const a = simpleInt(1, 5);
+  const b = simpleInt(-5, 5);
+  const image = simpleInt(-4, 6);
   const x = (image - b) / a;
   const wrongs = [image * a + b, image + b, image - b];
   return {
@@ -1078,9 +1090,9 @@ function genRecognizeFunction() {
 }
 
 function genSignFromFactorized() {
-  const a = randInt(-4, 4) || -2;
-  const b = randInt(1, 6);
-  const c = randInt(-6, -1);
+  const a = simpleInt(-4, 4) || -2;
+  const b = simpleInt(1, 6);
+  const c = simpleInt(-6, -1);
   const statement = `Déterminer le signe de f(x) = ${a}(x ${formatSigned(-b)})(x ${formatSigned(-c)}).`;
   const correct = `Signe de ${a > 0 ? "l'intérieur" : "l'extérieur"} de [${Math.min(b, c)} ; ${Math.max(b, c)}]`;
   const wrongs = ['Toujours positif', 'Toujours négatif', 'Change uniquement en x = 0'];
@@ -1092,22 +1104,22 @@ function genSignFromFactorized() {
 }
 
 function genGraphReadValue() {
-  const slope = randInt(-3, 3) || 2;
-  const intercept = randInt(-4, 4);
-  const xQuery = randInt(-3, 3);
+  const slope = simpleInt(-3, 3) || 2;
+  const intercept = simpleInt(-4, 4);
+  const xQuery = simpleInt(-3, 3);
   const value = slope * xQuery + intercept;
   const description = `Selon le mini-graphe ci-dessous, quelle est l'image de x = ${xQuery} ?`;
   return {
     statement: description,
     statementHTML: `${description}<br/>${createLineGraph(slope, intercept)}`,
-    ...buildChoiceSet(`${value}`, [`${value + randInt(1, 3)}`, `${value - randInt(1, 3)}`, `${value + slope}`]),
+    ...buildChoiceSet(`${value}`, [`${value + simpleInt(1, 3)}`, `${value - simpleInt(1, 3)}`, `${value + slope}`]),
     explanation: `Sur la droite y = ${slope}x ${intercept >= 0 ? '+ ' : '- '}${Math.abs(intercept)}, f(${xQuery}) = ${value}.`,
   };
 }
 
 function genGraphSolveZero() {
-  const slope = randInt(1, 4);
-  const intercept = randInt(-5, -1);
+  const slope = simpleInt(1, 4);
+  const intercept = simpleInt(-5, -1);
   const root = -intercept / slope;
   const description = "D'après le graphique, pour quelle valeur de x a-t-on f(x) = 0 ?";
   return {
@@ -1119,9 +1131,9 @@ function genGraphSolveZero() {
 }
 
 function genGraphSolveK() {
-  const slope = randInt(-3, 3) || 2;
-  const intercept = randInt(-4, 4);
-  const xTarget = randInt(-3, 3);
+  const slope = simpleInt(-3, 3) || 2;
+  const intercept = simpleInt(-4, 4);
+  const xTarget = simpleInt(-3, 3);
   const k = slope * xTarget + intercept;
   const compare = Math.random() < 0.5 ? '=' : '<';
   const description = `D'après le graphique, résoudre f(x) ${compare} ${k}.`;
@@ -1151,9 +1163,9 @@ function genGraphSolveK() {
 }
 
 function genPointSlopeEquation() {
-  const slope = randInt(-4, 4) || 1;
-  const x0 = randInt(-3, 3);
-  const y0 = randInt(-5, 5);
+  const slope = simpleInt(-4, 4) || 1;
+  const x0 = simpleInt(-3, 3);
+  const y0 = simpleInt(-5, 5);
   const b = y0 - slope * x0;
   const correct = `y = ${slope}x ${b >= 0 ? '+ ' : '- '}${Math.abs(b)}`;
   const wrongs = [`y = ${b}x ${slope >= 0 ? '+ ' : '- '}${Math.abs(slope)}`, `y = ${slope}(x + ${x0})`, `y = ${slope}x`];
@@ -1165,13 +1177,13 @@ function genPointSlopeEquation() {
 }
 
 function genPointOnCurve() {
-  const a = randInt(1, 4);
-  const b = randInt(-4, 4);
-  const c = randInt(-3, 5);
-  const x0 = randInt(-3, 3);
+  const a = simpleInt(1, 4);
+  const b = simpleInt(-4, 4);
+  const c = simpleInt(-3, 5);
+  const x0 = simpleInt(-3, 3);
   const belongs = Math.random() < 0.5;
   const yExact = a * x0 * x0 + b * x0 + c;
-  const y0 = belongs ? yExact : yExact + randInt(1, 4);
+  const y0 = belongs ? yExact : yExact + simpleInt(1, 4);
   const statement = `Le point (${x0}; ${y0}) appartient-il à la courbe d'équation y = ${a}x² ${formatSigned(b)}x ${formatSigned(c)} ?`;
   const correct = belongs ? 'Oui' : 'Non';
   const wrongs = belongs ? ['Non', 'Impossible à dire', 'Oui, uniquement si x > 0'] : ['Oui', 'Impossible à dire', 'Toujours'];
@@ -1183,8 +1195,8 @@ function genPointOnCurve() {
 }
 
 function genGraphSign() {
-  const slope = randInt(-3, 3) || 2;
-  const intercept = randInt(-4, 4);
+  const slope = simpleInt(-3, 3) || 2;
+  const intercept = simpleInt(-4, 4);
   const root = -intercept / slope;
   const description = 'À partir du graphique, déterminer où f(x) est positive.';
   const positiveInterval = slope > 0 ? `x > ${root.toFixed(1)}` : `x < ${root.toFixed(1)}`;
@@ -1205,8 +1217,8 @@ function genGraphSign() {
 function genDrawLine() {
   const useEquation = Math.random() < 0.5;
   if (useEquation) {
-    const slope = randInt(-3, 3) || 1;
-    const intercept = randInt(-4, 4);
+    const slope = simpleInt(-3, 3) || 1;
+    const intercept = simpleInt(-4, 4);
     const p1 = `(0 ; ${intercept})`;
     const p2 = `(1 ; ${slope + intercept})`;
     const correct = `Placer les points ${p1} et ${p2} puis tracer la droite.`;
@@ -1222,9 +1234,9 @@ function genDrawLine() {
       explanation: `On repère l'ordonnée à l'origine (${p1}) puis un second point obtenu avec le coefficient directeur : ${p2}.`,
     };
   }
-  const slope = randInt(-3, 3) || 2;
-  const x0 = randInt(-3, 3);
-  const y0 = randInt(-4, 4);
+  const slope = simpleInt(-3, 3) || 2;
+  const x0 = simpleInt(-3, 3);
+  const y0 = simpleInt(-4, 4);
   const p2 = `(${x0 + 1} ; ${y0 + slope})`;
   const statement = `Pour tracer la droite passant par (${x0} ; ${y0}) de coefficient directeur ${slope}, quel second point peut-on utiliser ?`;
   const correct = p2;
@@ -1237,8 +1249,8 @@ function genDrawLine() {
 }
 
 function genEquationFromGraph() {
-  const slope = randInt(-3, 3) || 2;
-  const intercept = randInt(-3, 3);
+  const slope = simpleInt(-3, 3) || 2;
+  const intercept = simpleInt(-3, 3);
   const description = 'Quelle est l’équation réduite de la droite représentée ?';
   const correct = `y = ${slope}x ${formatSigned(intercept)}`;
   const wrongs = [
@@ -1277,14 +1289,14 @@ const functionQuestions = [
 ];
 
 function genMeanValue() {
-  const n1 = randInt(2, 6);
-  const n2 = randInt(2, 6);
-  const v1 = randInt(5, 15);
-  const v2 = randInt(10, 25);
+  const n1 = simpleInt(2, 6);
+  const n2 = simpleInt(2, 6);
+  const v1 = simpleInt(5, 15);
+  const v2 = simpleInt(10, 25);
   const values = Array(n1).fill(v1).concat(Array(n2).fill(v2));
   const sum = values.reduce((acc, value) => acc + value, 0);
   const mean = sum / values.length;
-  const wrongs = [mean + randInt(1, 3), v1, v2];
+  const wrongs = [mean + simpleInt(1, 3), v1, v2];
   return {
     statement: `On relève ${n1} notes égales à ${v1} et ${n2} notes égales à ${v2}. Quelle est la moyenne ?`,
     ...buildChoiceSet(mean.toFixed(1), wrongs.map((value) => (value.toFixed ? value.toFixed(1) : `${value}`))),
@@ -1293,7 +1305,7 @@ function genMeanValue() {
 }
 
 function genMedian() {
-  const data = shuffle([randInt(10, 18), randInt(12, 20), randInt(14, 22), randInt(16, 24), randInt(18, 26)]).sort(
+  const data = shuffle([simpleInt(10, 18), simpleInt(12, 20), simpleInt(14, 22), simpleInt(16, 24), simpleInt(18, 26)]).sort(
     (a, b) => a - b,
   );
   const median = data[2];
@@ -1306,7 +1318,7 @@ function genMedian() {
 }
 
 function genQuartile() {
-  const data = Array.from({ length: 8 }, () => randInt(5, 25)).sort((a, b) => a - b);
+  const data = Array.from({ length: 8 }, () => simpleInt(5, 25)).sort((a, b) => a - b);
   const q1 = data[2];
   const q3 = data[5];
   const askQ1 = Math.random() < 0.5;
@@ -1320,10 +1332,10 @@ function genQuartile() {
 }
 
 function genBoxPlotComparison() {
-  const medA = randInt(10, 15);
-  const medB = medA + randInt(-2, 3);
-  const spreadA = randInt(6, 12);
-  const spreadB = spreadA + randInt(-3, 5);
+  const medA = simpleInt(10, 15);
+  const medB = medA + simpleInt(-2, 3);
+  const spreadA = simpleInt(6, 12);
+  const spreadB = spreadA + simpleInt(-3, 5);
   const correct = medA > medB ? 'La boîte A a une médiane plus grande.' : 'La boîte B a une médiane plus grande.';
   const wrongs = ['Les deux médianes sont identiques.', 'On ne peut rien conclure.', 'La médiane la plus faible correspond à la plus grande dispersion.'];
   return {
@@ -1335,7 +1347,7 @@ function genBoxPlotComparison() {
 
 function genDiagramReading() {
   const cats = ['A', 'B', 'C'];
-  const values = cats.map(() => randInt(10, 30));
+  const values = cats.map(() => simpleInt(10, 30));
   const maxIndex = values.indexOf(Math.max(...values));
   const statement = `Dans un diagramme en bâtons (valeurs : A=${values[0]}, B=${values[1]}, C=${values[2]}), quelle catégorie domine ?`;
   const wrongs = cats.filter((_, index) => index !== maxIndex).map((label) => `Catégorie ${label}`);
@@ -1347,8 +1359,8 @@ function genDiagramReading() {
 }
 
 function genGraphToData() {
-  const total = randInt(40, 80);
-  const portion = randInt(5, 20);
+  const total = simpleInt(40, 80);
+  const portion = simpleInt(5, 20);
   const frequency = portion / total;
   const wrongs = [`${portion}`, `${total - portion}`, `${(frequency * 50).toFixed(1)}%`];
   return {
@@ -1385,9 +1397,9 @@ function genPieChartReading() {
 
 function genTimeSeriesCommentary() {
   const startYear = 2020;
-  const values = [randInt(40, 120)];
-  values.push(values[0] + randInt(-15, 25));
-  values.push(values[1] + randInt(-10, 30));
+  const values = [simpleInt(40, 120)];
+  values.push(values[0] + simpleInt(-15, 25));
+  values.push(values[1] + simpleInt(-10, 30));
   const years = [startYear, startYear + 1, startYear + 2];
   const trend = values[2] > values[0] ? 'augmente globalement' : 'diminue globalement';
   const statement = `Une courbe chronologique passe par (${years[0]}, ${values[0]}), (${years[1]}, ${values[1]}) et (${years[2]}, ${
@@ -1407,9 +1419,9 @@ function genTimeSeriesCommentary() {
 }
 
 function genBoxPlotReading() {
-  const q1 = randInt(20, 40);
-  const median = q1 + randInt(2, 10);
-  const q3 = median + randInt(2, 10);
+  const q1 = simpleInt(20, 40);
+  const median = q1 + simpleInt(2, 10);
+  const q3 = median + simpleInt(2, 10);
   const statement = `Dans un diagramme en boîte avec Q₁ = ${q1}, médiane = ${median} et Q₃ = ${q3}, quel est l'écart interquartile ?`;
   const correct = `${q3 - q1}`;
   const wrongs = [`${median}`, `${q3 - median}`, `${median - q1}`];
@@ -1434,8 +1446,8 @@ const statisticsQuestions = [
 ];
 
 function genBagProbability() {
-  const red = randInt(2, 6);
-  const blue = randInt(2, 6);
+  const red = simpleInt(2, 6);
+  const blue = simpleInt(2, 6);
   const total = red + blue;
   const wrongs = [`${blue}/${total}`, `${red}/${blue}`, `${red + blue}`];
   return {
@@ -1446,7 +1458,7 @@ function genBagProbability() {
 }
 
 function genComplementaryEvent() {
-  const prob = randInt(10, 70) / 100;
+  const prob = simpleInt(10, 70) / 100;
   const complement = (1 - prob).toFixed(2);
   const wrongs = [prob.toFixed(2), (prob * prob).toFixed(2), (prob + 0.2).toFixed(2)];
   return {
@@ -1457,8 +1469,8 @@ function genComplementaryEvent() {
 }
 
 function genIndependentEvents() {
-  const a = randInt(2, 5) / 10;
-  const b = randInt(2, 5) / 10;
+  const a = simpleInt(2, 5) / 10;
+  const b = simpleInt(2, 5) / 10;
   const product = (a * b).toFixed(2);
   const wrongs = [a.toFixed(2), b.toFixed(2), (a + b).toFixed(2)];
   return {
@@ -1469,9 +1481,9 @@ function genIndependentEvents() {
 }
 
 function genTreeProbability() {
-  const pA = randInt(2, 8) / 10;
-  const pBgivenA = randInt(3, 8) / 10;
-  const pBgivenNotA = randInt(1, 6) / 10;
+  const pA = simpleInt(2, 8) / 10;
+  const pBgivenA = simpleInt(3, 8) / 10;
+  const pBgivenNotA = simpleInt(1, 6) / 10;
   const prob = (pA * pBgivenA + (1 - pA) * pBgivenNotA).toFixed(2);
   const wrongs = [pBgivenA.toFixed(2), pA.toFixed(2), pBgivenNotA.toFixed(2)];
   return {
@@ -1484,9 +1496,9 @@ function genTreeProbability() {
 }
 
 function genConditionalFromTable() {
-  const total = randInt(80, 120);
-  const row = randInt(30, 60);
-  const success = randInt(10, row - 5);
+  const total = simpleInt(80, 120);
+  const row = simpleInt(30, 60);
+  const success = simpleInt(10, row - 5);
   const prob = (success / row).toFixed(2);
   const wrongs = [(success / total).toFixed(2), (row / total).toFixed(2), (1 - success / row).toFixed(2)];
   return {
@@ -1497,8 +1509,8 @@ function genConditionalFromTable() {
 }
 
 function genSumEvent() {
-  const die = randInt(4, 6);
-  const sought = randInt(2, die);
+  const die = simpleInt(4, 6);
+  const sought = simpleInt(2, die);
   const prob = (1 / die).toFixed(2);
   const wrongs = [(1 / (die - 1)).toFixed(2), `${sought}/${die}`, `${die}/${sought}`];
   return {
@@ -1509,7 +1521,7 @@ function genSumEvent() {
 }
 
 function genEventBySum() {
-  const probs = [randInt(1, 4) / 10, randInt(1, 4) / 10, randInt(1, 4) / 10];
+  const probs = [simpleInt(1, 4) / 10, simpleInt(1, 4) / 10, simpleInt(1, 4) / 10];
   const totalAssigned = probs.reduce((acc, value) => acc + value, 0);
   const remaining = Math.max(0, 1 - totalAssigned);
   const options = ['A', 'B', 'C', 'D'];
@@ -1533,9 +1545,9 @@ function genEventBySum() {
 }
 
 function genConditionalFromTree() {
-  const pA = randInt(2, 9) / 10;
-  const pBgivenA = randInt(2, 9) / 10;
-  const pBgivenNotA = randInt(2, 9) / 10;
+  const pA = simpleInt(2, 9) / 10;
+  const pBgivenA = simpleInt(2, 9) / 10;
+  const pBgivenNotA = simpleInt(2, 9) / 10;
   const numerator = pA * pBgivenA;
   const denominator = numerator + (1 - pA) * pBgivenNotA;
   const prob = (numerator / denominator).toFixed(2);
@@ -1558,9 +1570,9 @@ function genNotationQuestion() {
 }
 
 function genBinomialProbability() {
-  const n = randInt(3, 6);
-  const k = randInt(1, n - 1);
-  const p = randInt(2, 8) / 10;
+  const n = simpleInt(3, 6);
+  const k = simpleInt(1, n - 1);
+  const p = simpleInt(2, 8) / 10;
   const probability = (binomialCoefficient(n, k) * p ** k * (1 - p) ** (n - k)).toFixed(3);
   const wrongs = [
     p.toFixed(3),
@@ -1575,8 +1587,8 @@ function genBinomialProbability() {
 }
 
 function genProbabilityBounds() {
-  const valid = (randInt(1, 9) / 10).toFixed(2);
-  const wrongs = ['-0.2', '1.5', `${randInt(2, 9)}`];
+  const valid = (simpleInt(1, 9) / 10).toFixed(2);
+  const wrongs = ['-0.2', '1.5', `${simpleInt(2, 9)}`];
   const statement = 'Parmi les valeurs suivantes, laquelle peut représenter une probabilité ?';
   return {
     statement,
