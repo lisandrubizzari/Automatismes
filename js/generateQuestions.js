@@ -1376,16 +1376,30 @@ function genQuartile() {
 }
 
 function genBoxPlotComparison() {
-  const medA = simpleInt(10, 15);
-  const medB = medA + simpleInt(-2, 3);
-  const spreadA = simpleInt(6, 12);
-  const spreadB = spreadA + simpleInt(-3, 5);
-  const correct = medA > medB ? 'La boîte A a une médiane plus grande.' : 'La boîte B a une médiane plus grande.';
-  const wrongs = ['Les deux médianes sont identiques.', 'On ne peut rien conclure.', 'La médiane la plus faible correspond à la plus grande dispersion.'];
+  const minA = simpleInt(2, 6);
+  const q1A = minA + simpleInt(2, 5);
+  const medianA = q1A + simpleInt(2, 5);
+  const q3A = medianA + simpleInt(2, 6);
+  const maxA = q3A + simpleInt(2, 6);
+
+  const minB = simpleInt(2, 6);
+  const q1B = minB + simpleInt(2, 5);
+  const medianB = q1B + simpleInt(2, 5);
+  const q3B = medianB + simpleInt(2, 6);
+  const maxB = q3B + simpleInt(2, 6);
+
+  const spreadA = q3A - q1A;
+  const spreadB = q3B - q1B;
+  const correct = medianA > medianB ? 'La boîte A a une médiane plus grande.' : 'La boîte B a une médiane plus grande.';
+  const wrongs = [
+    'Les deux médianes sont identiques.',
+    spreadA > spreadB ? 'La boîte B a une plus grande dispersion.' : 'La boîte A a une plus grande dispersion.',
+    'On ne peut rien conclure.',
+  ];
   return {
-    statement: `Deux boîtes à moustaches montrent les médianes ${medA} et ${medB} et les amplitudes interquartiles ${spreadA} et ${spreadB}. Que peut-on affirmer ?`,
+    statement: `Deux boîtes à moustaches (min, Q₁, médiane, Q₃, max) sont données : A = (${minA}, ${q1A}, ${medianA}, ${q3A}, ${maxA}) et B = (${minB}, ${q1B}, ${medianB}, ${q3B}, ${maxB}). Que peut-on affirmer ?`,
     ...buildChoiceSet(correct, wrongs),
-    explanation: `On lit les médianes (trait central) et les largeurs des boîtes pour comparer position et dispersion.`,
+    explanation: `On vérifie l'ordre min ≤ Q₁ ≤ médiane ≤ Q₃ ≤ max et on compare médianes (${medianA} vs ${medianB}) et amplitudes interquartiles (${spreadA} vs ${spreadB}).`,
   };
 }
 
@@ -1403,14 +1417,30 @@ function genDiagramReading() {
 }
 
 function genGraphToData() {
-  const total = simpleInt(40, 80);
-  const portion = simpleInt(5, 20);
-  const frequency = portion / total;
-  const wrongs = [`${portion}`, `${total - portion}`, `${(frequency * 50).toFixed(1)}%`];
+  let classes = [];
+  let total = 0;
+  do {
+    const first = simpleInt(8, 20);
+    const second = simpleInt(8, 20);
+    const third = simpleInt(8, 20);
+    total = first + second + third;
+    classes = [first, second, third];
+  } while (total < 45 || total > 90 || new Set(classes).size === 1);
+
+  const targetIndex = simpleInt(0, 2);
+  const portion = classes[targetIndex];
+  const frequency = roundTo(portion / total, 2).toFixed(2);
+  const alternateIndices = [0, 1, 2].filter((index) => index !== targetIndex && classes[index] !== portion);
+  const otherIndex = alternateIndices.length > 0 ? alternateIndices[0] : (targetIndex + 1) % 3;
+  const wrongs = [
+    roundTo(classes[otherIndex] / total, 2).toFixed(2),
+    (portion + 5).toString(),
+    (total - portion).toString(),
+  ];
   return {
-    statement: `Dans un histogramme représentant ${total} élèves, la classe 10-20 compte ${portion} élèves. Quelle fréquence associer à cette classe ?`,
-    ...buildChoiceSet(frequency.toFixed(2), wrongs.map((v) => (typeof v === 'string' ? v : `${v}`))),
-    explanation: `Fréquence = effectif/total = ${portion}/${total} = ${frequency.toFixed(2)}.`,
+    statement: `Un histogramme porte sur ${total} élèves répartis en trois classes d'effectifs ${classes.join(', ')}. Quelle fréquence associer à la classe n°${targetIndex + 1} ?`,
+    ...buildChoiceSet(frequency, wrongs),
+    explanation: `Effectif total ${total}, classe n°${targetIndex + 1} de ${portion} élèves ⇒ fréquence = ${portion}/${total} = ${frequency}.`,
   };
 }
 
